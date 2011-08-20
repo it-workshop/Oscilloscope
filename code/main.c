@@ -358,12 +358,10 @@ int main() {
 				}
 			}
 			if(menu_state==-1) {
-				if(mode==MODE_SPECTRUM||mode==MODE_DUAL||mode==MODE_SIGNAL) {
-					fft_input(capture, bfly_buff);
-					fft_execute(bfly_buff);
-					fft_output(bfly_buff, output);
-				}
 				if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
+						fft_input(capture, bfly_buff);
+						fft_execute(bfly_buff);
+						fft_output(bfly_buff, output);
 						for (m=0;m<ALL_N/2;m++) {
 							s=output[m]>>9;
 							if(s>63) s=63;
@@ -467,9 +465,9 @@ int main() {
 			//wait=(ovf*65536+TCNT1)%adc_period;
 			
 			wait=(ovf*65536+TCNT1);
-			if(maxwait<wait&&menu_state==-1) maxwait=wait+(adc_period-wait%adc_period);
-			if(maxwait>wait&&menu_state==-1) {
-				wait=maxwait-wait;
+			//if(maxwait<wait&&menu_state==-1) maxwait=wait+(adc_period-wait%adc_period);
+			wait=adc_period-wait%adc_period;
+			if(wait) {
 				TCNT1=0;
 				OCR1A=wait%65536;
 				ovf=(wait-OCR1A)/65536;
