@@ -7,8 +7,8 @@ LIBS           =
 
 CC             = avr-gcc
 ASFLAGS        = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
-ALL_ASFLAGS    = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp $(ASFLAGS) -DF_CPU=12000000L
-CFLAGS         = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=12000000L
+ALL_ASFLAGS    = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp $(ASFLAGS) -DF_CPU=20000000L
+CFLAGS         = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=20000000L
 LDFLAGS        = -Wl,-Map,$(PRG).map
 
 OBJCOPY        = avr-objcopy

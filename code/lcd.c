@@ -163,6 +163,11 @@ void lcd_pixel_line_from_left(uint8_t y, uint16_t v) {
 }
 void lcd_num_from_right(unsigned int maxx,unsigned int y,unsigned int n) {
 	short unsigned int m,x=maxx-FONT_SIZE-1;
+	if(!n) {
+		lcd_goto_xblock(x);
+		lcd_goto_yblock(y);
+		lcd_sym('0');
+	}
 	while(n) {
 		m=n%10;
 		lcd_goto_xblock(x);
