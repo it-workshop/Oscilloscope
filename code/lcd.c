@@ -161,7 +161,7 @@ void lcd_pixel_line_from_left(uint8_t y, uint16_t v) {
 	}
 	lcd_databits(SEND_DATA,r);
 }
-void lcd_num_from_right(unsigned int maxx,unsigned int y,unsigned int n) {
+void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n) {
 	short unsigned int m,x=maxx-FONT_SIZE-1;
 	if(!n) {
 		lcd_goto_xblock(x);

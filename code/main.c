@@ -27,8 +27,8 @@
 #define incr_step(a,min,max,step) a=((a>(max-step))?min:a+step)
 #define decr_step(a,min,max,step) a=((a<(min+step))?max:a-step)
 
-#define fft_maxfreq() lcd_str("8px=",64,0);lcd_num_from_right(128,0,(F_CPU/(adc_period))>>4);lcd_str("hz",DISPLAY_X-11,1)
-#define dfreq() lcd_str("dfreq/2=",0,0);lcd_num_from_right(63,1,F_CPU/adc_period/2)
+#define fft_maxfreq() lcd_str("8px=",(DISPLAY_X/2),0);lcd_num_from_right(DISPLAY_X,0,(F_CPU/(adc_period*(1<<spectrum_x_zoom)))>>4);lcd_str("hz",DISPLAY_X-11,1)
+#define dfreq() lcd_str("dfreq=",0,0);lcd_num_from_right(63,1,F_CPU/adc_period)
 
 
 //menu items
@@ -39,10 +39,11 @@
 #define MENU_ADCERROR 4
 #define MENU_ADCSTEP 5
 #define MENU_LCDSKIP 6
-#define MENU_SPECTRUMSCALE 7
-#define MENU_ABOUT 8
+#define MENU_SPECTRUMXZOOM 7
+#define MENU_SPECTRUMYZOOM 8
+#define MENU_ABOUT 9
 
-#define MENU_MAX 8
+#define MENU_MAX 9
 
 //program modes
 #define	MODE_MIN 1
@@ -53,12 +54,14 @@
 #define MODE_DUAL 4
 #define MODE_UART 5
 #define MODE_UART_BUF 6
+
 #define MODE_MAX 6
 
+//settings
 #define LCD_SKIP_MIN 1
 #define LCD_SKIP_MAX 255
 
-#define ADC_PERIOD_MIN 200
+#define ADC_PERIOD_MIN 80
 #define ADC_PERIOD_MAX 65535
 
 #define ADC_STEP_MIN 1
@@ -66,12 +69,17 @@
 #define ADC_ERROR_STEP 100
 #define ADC_ERROR_MAX 65535
 
+#define SPECTRUM_ZOOM_MIN 0
+#define SPECTRUM_ZOOM_MAX_Y 6
+#define SPECTRUM_ZOOM_MAX_X 5
+
 #define adc_period OCR1B
 
 uint16_t capture[ALL_N];
 complex_t bfly_buff[ALL_N];		/* FFT buffer */
 uint16_t output[ALL_N/2];
 
+//state variables
 uint8_t current=0,
 	mode=MODE_DUAL,
 	top_state1=0,
@@ -83,19 +91,24 @@ uint8_t current=0,
 	adc_step=20,
 	array_filled=0,
 	error_storage=0,
-	spectrum_scale=0;
+	spectrum_x_zoom=0,
+	spectrum_y_zoom=0,
+	pause=0,
+	lcd_skip=1;
 int8_t menu_state=-1; //-1 disabled
-				   //0 display exit 
-				   //1...MENU_MAX - display option
-				   //MENU_MAX+1...2*MENU_MAX - entered in
+	//0 display exit 
+	//1...MENU_MAX - display option
+	//MENU_MAX+1...2*MENU_MAX - entered in
+uint16_t adc_error=20000,
+	adc_check=5,
+	adc_reset=6*ALL_N;
+
 //counters
-uint8_t m=1,s,u,u1,lcd_skip=1,lcd_skip_c=1;
-uint16_t ymin,ymax,c,c1,
-	adc_max=65535,
-	adc_error=15000,
-	adc_check=10,
-	adc_reset=4*ALL_N,
-	adc_reset_c=0;
+uint8_t m=1,s,u,lcd_skip_c=1;
+uint16_t adc_reset_c=0;
+
+//temp
+uint16_t ymin,ymax,c,c1;
 
 inline void buttons_update() {
 	right_state1=right_state();
@@ -103,6 +116,158 @@ inline void buttons_update() {
 	top_state1=top_state();
 	up_state1=up_state();
 	down_state1=down_state();
+}
+
+void osd() {
+	if(mode==MODE_DUAL||mode==MODE_SPECTRUM) fft_maxfreq();
+	if(mode==MODE_SIGNAL||mode==MODE_DUAL) dfreq();
+}
+
+inline uint8_t todisplay(uint16_t a) {
+	if(menu_state==-1) return(DISPLAY_Y-1-(a>>9));
+	else return(DISPLAY_Y-1-(a>>10));
+}
+
+void draw_menu() {
+	if(menu_state>MENU_MAX) {
+		if(menu_state==(MENU_MAX+MENU_ADCPERIOD)) {
+			lcd_str("adc period",0,0);
+			lcd_pixel_line_from_left(1,(adc_period-ADC_PERIOD_MIN)>>3);
+			lcd_num_from_right(127,2,adc_period);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_ABOUT)) {
+			lcd_str("digital",0,0);
+			lcd_str("oscill.",10,1);
+			lcd_str("v1.0",0,2);
+			lcd_str("fft lib.",0,4);
+			lcd_str("by chan",0,5);
+			lcd_str("sergey",(DISPLAY_X/2),0);
+			lcd_str("volodin",70,1);
+			lcd_str("2011",80,2);
+			lcd_str("i.179e.net",(DISPLAY_X/2),4);
+		}
+		if(menu_state==(MENU_MAX+MENU_LCDSKIP)) {
+			lcd_str("lcd skip",0,0);
+			lcd_pixel_line_from_left(1,lcd_skip);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_ADCSTEP)) {
+			lcd_str("adc p step",0,0);
+			lcd_num_from_right((DISPLAY_X/2),1,adc_step);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_ADCERROR)) {
+			lcd_str("adc error",0,0);
+			lcd_num_from_right((DISPLAY_X/2),1,adc_error);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_ADCCHECK)) {
+			lcd_str("adc check",0,0);
+			if(adc_check) lcd_num_from_right((DISPLAY_X/2),1,adc_check);
+			else lcd_str("disabled",0,1);
+			lcd_arrows(0,2);
+			lcd_str("0 to dsbl.",0,3);
+		}
+		if(menu_state==(MENU_MAX+MENU_SPECTRUMXZOOM)) {
+			lcd_str("sp. xzoom",0,0);
+			lcd_num_from_right(DISPLAY_X/2-1,1,1<<spectrum_x_zoom);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_SPECTRUMYZOOM)) {
+			lcd_str("sp. yzoom",0,0);
+			lcd_num_from_right(DISPLAY_X/2-1,1,1<<spectrum_y_zoom);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_MODE)) {
+			lcd_str("mode",0,0);
+			if(mode==MODE_SIGNAL) lcd_str("signal",0,1);
+			else if(mode==MODE_SPECTRUM) {
+				lcd_str("spectrum",0,1);
+				if(mode==MODE_SPECTRUM||mode==MODE_DUAL) fft_maxfreq();
+			}
+			else if(mode==MODE_XY) lcd_str("xy",0,1);
+			else if(mode==MODE_DUAL) {
+				lcd_str("dual",0,1);
+				if(mode==MODE_SPECTRUM||mode==MODE_DUAL) fft_maxfreq();
+			}
+			else if(mode==MODE_UART) lcd_str("uart",0,1);
+			else if(mode==MODE_UART_BUF) {
+				lcd_str("uart buf",0,1);
+			}
+			lcd_arrows(0,2);
+		}
+	}
+	else if(menu_state!=-1) {
+		lcd_str("menu",0,0);
+		if(menu_state==MENU_EXIT) lcd_str("exit",0,1);
+		if(menu_state==MENU_ADCPERIOD) lcd_str("adc period",0,1);
+		if(menu_state==MENU_ADCSTEP) lcd_str("adc p step",0,1);
+		if(menu_state==MENU_LCDSKIP) lcd_str("lcd skip",0,1);
+		if(menu_state==MENU_ADCCHECK) lcd_str("adc check",0,1);
+		if(menu_state==MENU_ADCERROR) lcd_str("adc error",0,1);
+		if(menu_state==MENU_SPECTRUMXZOOM) lcd_str("sp. xzoom",0,1);
+		if(menu_state==MENU_SPECTRUMYZOOM) lcd_str("sp. yzoom",0,1);
+		if(menu_state==MENU_ABOUT) lcd_str("about",0,1);
+		if(menu_state==MENU_MODE) lcd_str("mode",0,1);
+		lcd_arrows(0,2);
+	}
+}
+
+void draw_signal() {
+	for(m=0;m<ALL_N;m++) {
+		c=todisplay(capture[m]);
+		if(mode==MODE_DUAL)  {
+			//prev
+			if(m>1) {
+				c1=todisplay(capture[m-2]);
+				if(c1<c) ymin=(c1+c)>>1;
+				if(c1>c) ymax=(c1+c)>>1;
+			}
+			else {
+				ymin=c;
+				ymax=c;
+			}
+			
+			//next
+			if(m<(ALL_N-2)) {
+				c1=todisplay(capture[m+2]);
+				if(c1<c) ymin=min(ymin,(c+c1)>>1);
+				if(c1>c) ymax=max(ymax,(c1+c)>>1);
+			}
+			
+			u=m/2;
+			m++;
+		}
+		else {
+			
+			//prev
+			if(m) {
+				c1=todisplay(capture[m-1]);
+				if(c1<c) ymin=(c1+c)>>1;
+				if(c1>c) ymax=(c1+c)>>1;
+			}
+			else {
+				ymin=c;
+				ymax=c;
+			}
+			
+			//next
+			if(m<(ALL_N-1)) {
+				c1=todisplay(capture[m+1]);
+				if(c1<c) ymin=min(ymin,(c+c1)>>1);
+				if(c1>c) ymax=max(ymax,(c1+c)>>1);
+			}
+			u=m;
+		}
+		if(menu_state==-1) {
+			for(s=0;s<8;s++) lcd_block(u,s,0);
+		}
+		else {
+			for(s=4;s<8;s++) lcd_block(u,s,0);
+		}
+		lcd_constx_line(u,ymin,ymax);
+	}
 }
 
 ISR(TIMER1_COMPB_vect) {
@@ -129,18 +294,19 @@ ISR(ADC_vect) {
 		}
 		capture[current]=ADC>>1;
 		if(mode==MODE_XY) {
-			if(!(current%2)) ADMUX=0b01100001;
+			if(!(current%2)) {
+				ADMUX=0b01100001;
+				ADCSRA|=1<<6;
+			}
 			else ADMUX=0b01100000;
 		}
 		if(mode!=MODE_UART) current++;
 	}
 }
 
-
 ISR(TIMER0_OVF_vect) {
 	while(!(pause_state())&&menu_state==-1) {
-		if(mode==MODE_SPECTRUM||mode==MODE_DUAL) fft_maxfreq();
-		if(mode==MODE_SIGNAL||mode==MODE_DUAL) dfreq();
+		osd();
 		if(!top_state()&&top_state1) {
 			menu_state=0;
 			redraw_menu=1;
@@ -151,39 +317,27 @@ ISR(TIMER0_OVF_vect) {
 	if(menu_state==-1) {
 		if(!right_state()&&right_state1) {
 			incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,adc_step);
-			if(mode==MODE_SPECTRUM||mode==MODE_DUAL) {
-				fft_maxfreq();
-				dfreq();
-				array_filled=0;
-				delay_ms(200);
-			}
+			osd();
+			delay_ms(200);
+			array_filled=0;
 		}
 		else if(!left_state()&&left_state1) {
 			decr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,adc_step);
-			if(mode==MODE_SPECTRUM||mode==MODE_DUAL) {
-				fft_maxfreq();
-				dfreq();
-				array_filled=0;
-				delay_ms(200);
-			}
+			osd();
+			delay_ms(200);
+			array_filled=0;
 		}
 		else if(!up_state()&&up_state1) {
 			increment(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX);
-			if(mode==MODE_SPECTRUM||mode==MODE_DUAL) {
-				fft_maxfreq();
-				dfreq();
-				array_filled=0;
-				delay_ms(200);
-			}
+			osd();
+			delay_ms(200);
+			array_filled=0;
 		}
 		else if(!down_state()&&down_state1) {
 			decrement(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX);
-			if(mode==MODE_SPECTRUM||mode==MODE_DUAL) {
-				fft_maxfreq();
-				dfreq();
-				array_filled=0;
-				delay_ms(200);
-			}
+			osd();
+			delay_ms(200);
+			array_filled=0;
 		}
 		else if(!top_state()&&top_state1) {
 			menu_state=0;
@@ -257,9 +411,23 @@ ISR(TIMER0_OVF_vect) {
 				redraw_menu=1;
 			}
 		}
-		else if(menu_state==(MENU_MAX+MENU_SPECTRUMSCALE)) {
-			if((!right_state()&&right_state1)||(!left_state()&&left_state1)) {
-				spectrum_scale=spectrum_scale?0:1;
+		else if(menu_state==(MENU_MAX+MENU_SPECTRUMXZOOM)) {
+			if(!right_state()&&right_state1) {
+				increment(spectrum_x_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_X);
+				redraw_menu=1;
+			}
+			if(!left_state()&&left_state1) {
+				decrement(spectrum_x_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_X);
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==(MENU_MAX+MENU_SPECTRUMYZOOM)) {
+			if(!right_state()&&right_state1) {
+				increment(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_Y);
+				redraw_menu=1;
+			}
+			if(!left_state()&&left_state1) {
+				decrement(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_Y);
 				redraw_menu=1;
 			}
 		}
@@ -290,208 +458,74 @@ ISR(TIMER0_OVF_vect) {
 }
 
 int main() {
-// pins init
-DDRB&=~(0x3f);
-DDRA|=1<<7;
-PORTA&=~(1<<7);
-PORTB|=0x3f;
-uart_init();
-lcd_init();
-ADMUX=0b01100000;
-ADCSRA=0b11011101;
-SPCR=0x53;
+	// pins init
+	DDRB&=~(0x3f);
+	DDRA|=1<<7;
+	PORTA&=~(1<<7);
+	PORTB|=0x3f;
+	
+	uart_init();
+	lcd_init();
+	
+	//adc init
+	ADMUX=0b01100000;
+	ADCSRA=0b11011101;
 
+	//button & adc interrupt init
+	TCCR0B=0b101;
+	TIMSK0=1<<TOIE0;
+	TIMSK1=(1<<OCIE1B);
+	TCNT0=0x00;
+	TCNT1=0x00;
+	adc_period=ADC_PERIOD_MIN;
+	TCCR1B=0b001;
+	sei();
 
-//button & adc interrupt init
-TCCR0B=0b101;
-TIMSK0=1<<TOIE0;
-TIMSK1=(1<<OCIE1B);
-TCNT0=0x00;
-TCNT1=0x00;
-adc_period=ADC_PERIOD_MIN;
-
-TCCR1B=0b001;
-sei();
-for(;;) {
-	if(redraw_menu) {
+	for(;;) {
+		if(redraw_menu) {
 			lcd_all(0);
 			redraw_menu=0;
-			if(menu_state>MENU_MAX) {
-				if(menu_state==(MENU_MAX+MENU_ADCPERIOD)) {
-					lcd_str("adc period",0,0);
-					lcd_pixel_line_from_left(1,(adc_period-ADC_PERIOD_MIN)>>3);
-					lcd_num_from_right(127,2,adc_period);
-					lcd_arrows(0,2);
-				}
-				if(menu_state==(MENU_MAX+MENU_ABOUT)) {
-					lcd_str("digital",0,0);
-					lcd_str("oscill.",10,1);
-					lcd_str("v1.0",0,2);
-					lcd_str("fft lib.",0,4);
-					lcd_str("by chan",0,5);
-					lcd_str("sergey",64,0);
-					lcd_str("volodin",70,1);
-					lcd_str("2011",80,2);
-					lcd_str("i.179e.net",64,4);
-				}
-				if(menu_state==(MENU_MAX+MENU_LCDSKIP)) {
-					lcd_str("lcd_skip",0,0);
-					lcd_pixel_line_from_left(1,lcd_skip);
-					lcd_arrows(0,2);
-				}
-				if(menu_state==(MENU_MAX+MENU_ADCSTEP)) {
-					lcd_str("adc p step",0,0);
-					lcd_num_from_right(64,1,adc_step);
-					lcd_arrows(0,2);
-				}
-				if(menu_state==(MENU_MAX+MENU_ADCERROR)) {
-					lcd_str("adc error",0,0);
-					lcd_num_from_right(64,1,adc_error);
-					lcd_arrows(0,2);
-				}
-				if(menu_state==(MENU_MAX+MENU_ADCCHECK)) {
-					lcd_str("adc error",0,0);
-					if(adc_check) lcd_num_from_right(64,1,adc_check);
-					else lcd_str("disabled",0,1);
-					lcd_str("0 to dsbl.",64,4);
-					lcd_arrows(0,2);
-				}
-				if(menu_state==(MENU_MAX+MENU_SPECTRUMSCALE)) {
-					lcd_str("sp. scale",0,0);
-					if(spectrum_scale) lcd_str("enabled",0,1);
-					else lcd_str("disabled",0,1);
-					lcd_arrows(0,2);
-				}
-				if(menu_state==(MENU_MAX+MENU_MODE)) {
-					lcd_str("mode",0,0);
-					if(mode==MODE_SIGNAL) {
-						lcd_str("signal",0,1);
-					}
-					else if(mode==MODE_SPECTRUM) {
-						lcd_str("spectrum",0,1);
-						if(mode==MODE_SPECTRUM||mode==MODE_DUAL) fft_maxfreq();
-					}
-					else if(mode==MODE_XY) {
-						lcd_str("xy",0,1);
-					}
-					else if(mode==MODE_DUAL) {
-						lcd_str("dual",0,1);
-						if(mode==MODE_SPECTRUM||mode==MODE_DUAL) fft_maxfreq();
-					}
-					else if(mode==MODE_UART) {
-						lcd_str("uart",0,1);
-					}
-					else if(mode==MODE_UART_BUF) {
-						lcd_str("uart buf",0,1);
-					}
-					lcd_arrows(0,2);
-				}
-			}
-			else if(menu_state!=-1) {
-				lcd_str("menu",0,0);
-				if(menu_state==MENU_EXIT) lcd_str("exit",0,1);
-				if(menu_state==MENU_ADCPERIOD) lcd_str("adc period",0,1);
-				if(menu_state==MENU_ADCSTEP) lcd_str("adc p step",0,1);
-				if(menu_state==MENU_LCDSKIP) lcd_str("lcd skip",0,1);
-				if(menu_state==MENU_ADCCHECK) lcd_str("adc check",0,1);
-				if(menu_state==MENU_ADCERROR) lcd_str("adc error",0,1);
-				if(menu_state==MENU_SPECTRUMSCALE) lcd_str("sp. scale",0,1);
-				if(menu_state==MENU_ABOUT) lcd_str("about",0,1);
-				if(menu_state==MENU_MODE) lcd_str("mode",0,1);
-				lcd_arrows(0,2);
-			}
+			draw_menu();
 		}
-		//lcd_num_from_right(120,6,error_storage);
 		if(current>=(ALL_N-1)) {
 			if(!array_filled) array_filled=1;
 			adc_reset_c=0;
-			
-			if(menu_state==-1) {
-				if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
-						fft_input(capture, bfly_buff);
-						fft_execute(bfly_buff);
-						fft_output(bfly_buff, output);
-						for (m=0;m<ALL_N/2;m++) {
-							if(spectrum_scale) s=output[m]>>5;
-							else s=output[m]>>9;
-							if(s>63) s=63;
-							if(s<0) s=0;
-							for(u=0;u<7;u++) lcd_block(ALL_N/2+m,u,0);
-							if(!(m%8)) {
-								lcd_goto_xblock(ALL_N/2+m);
-								lcd_goto_yblock(2);
-								lcd_databits(SEND_DATA,0x1);
-							}
-							lcd_line_from_bottom(ALL_N/2+m,s);
+			if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
+					fft_input(capture, bfly_buff);
+					fft_execute(bfly_buff);
+					fft_output(bfly_buff, output);
+					for (m=0;m<ALL_N/2;m++) {
+						s=output[m]>>(9-spectrum_y_zoom);
+						if(s>63) s=63;
+						if(s<0) s=0;
+						for(u=0;u<7;u++) lcd_block(ALL_N/2+m,u,0);
+						if(!(m%8)) {
+							lcd_goto_xblock(ALL_N/2+m);
+							lcd_goto_yblock(2);
+							lcd_databits(SEND_DATA,0x1);
 						}
+						c=(DISPLAY_X/2)+(m<<spectrum_x_zoom);
+						if(c<DISPLAY_X) lcd_line_from_bottom(c,s);
+					}
+			}
+			if((mode==MODE_SIGNAL)||(mode==MODE_DUAL)) {
+				if(lcd_skip_c>=lcd_skip) {
+					lcd_skip_c=1;
+					draw_signal();
 				}
-				if((mode==MODE_SIGNAL)||(mode==MODE_DUAL)) {
-					if(lcd_skip_c>=lcd_skip) {
-						lcd_skip_c=1;
-						for(m=0;m<ALL_N;m++) {
-							if(mode==MODE_DUAL)  {
-								c=63-(capture[m]>>9);
-								
-								//prev
-								if(m>1) {
-									c1=(63-(capture[m-2]>>9));
-									if(c1<c) ymin=(c1+c)>>1;
-									if(c1>c) ymax=(c1+c)>>1;
-								}
-								else {
-									ymin=c;
-									ymax=c;
-								}
-								
-								//next
-								if(m<(ALL_N-2)) {
-									c1=63-(capture[m+2]>>9);
-									if(c1<c) ymin=min(ymin,(c+c1)>>1);
-									if(c1>c) ymax=max(ymax,(c1+c)>>1);
-								}
-								for(s=0;s<8;s++) lcd_block(m/2,s,0);
-								lcd_constx_line(m/2,ymin,ymax);
-								m++;
-							}
-							else {
-								c=63-(capture[m]>>9);
-								
-								//prev
-								if(m) {
-									c1=(63-(capture[m-1]>>9));
-									if(c1<c) ymin=(c1+c)>>1;
-									if(c1>c) ymax=(c1+c)>>1;
-								}
-								else {
-									ymin=c;
-									ymax=c;
-								}
-								
-								//next
-								if(m<(ALL_N-1)) {
-									c1=63-(capture[m+1]>>9);
-									if(c1<c) ymin=min(ymin,(c+c1)>>1);
-									if(c1>c) ymax=max(ymax,(c1+c)>>1);
-								}
-								for(s=0;s<8;s++) lcd_block(m,s,0);
-								lcd_constx_line(m,ymin,ymax);
-							}
-						}
+				else lcd_skip_c++;
+			}
+			else if(mode==MODE_XY) {
+				if(lcd_skip_c>=lcd_skip) {
+					lcd_skip_c=1;
+					for(s=(DISPLAY_X/2);s<DISPLAY_X;s++) {
+						for(m=0;m<8;m++) lcd_block(s,m,0);
 					}
-					else lcd_skip_c++;
 				}
-				else if(mode==MODE_XY) {
-					if(lcd_skip_c>=lcd_skip) {
-						lcd_skip_c=1;
-						for(s=64;s<128;s++) {
-							for(m=0;m<8;m++) lcd_block(s,m,0);
-						}
-					}
-					else lcd_skip_c++;
-					
-					for(s=0;s<128;s+=2) {
-						lcd_pixel_share(ALL_N/2+(capture[s]>>9),63-(capture[s+1]>>9));
-					}
+				else lcd_skip_c++;
+				
+				for(s=0;s<DISPLAY_X;s+=2) {
+					lcd_pixel_share(ALL_N/2+(capture[s]>>9),63-(capture[s+1]>>9));
 				}
 			}
 			else if(mode==MODE_UART_BUF) {
