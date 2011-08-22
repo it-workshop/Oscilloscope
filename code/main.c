@@ -59,7 +59,7 @@
 
 //settings
 #define LCD_SKIP_MIN 1
-#define LCD_SKIP_MAX 255
+#define LCD_SKIP_MAX 4096
 
 #define ADC_PERIOD_MIN 80
 #define ADC_PERIOD_MAX 65535
@@ -87,25 +87,26 @@ uint8_t current=0,
 	right_state1=0,
 	up_state1=0,
 	down_state1=0,
+	pause_state1=0,
 	redraw_menu=0,
-	adc_step=20,
+	adc_step=100,
 	array_filled=0,
 	error_storage=0,
 	spectrum_x_zoom=0,
 	spectrum_y_zoom=0,
-	pause=0,
-	lcd_skip=1;
+	running=1;
 int8_t menu_state=-1; //-1 disabled
 	//0 display exit 
 	//1...MENU_MAX - display option
 	//MENU_MAX+1...2*MENU_MAX - entered in
 uint16_t adc_error=20000,
 	adc_check=5,
-	adc_reset=6*ALL_N;
+	adc_reset=6*ALL_N,
+	lcd_skip=1;
 
 //counters
-uint8_t m=1,s,u,lcd_skip_c=1;
-uint16_t adc_reset_c=0;
+uint8_t m=1,s,u;
+uint16_t adc_reset_c=0,lcd_skip_c=1;
 
 //temp
 uint16_t ymin,ymax,c,c1;
@@ -116,6 +117,7 @@ inline void buttons_update() {
 	top_state1=top_state();
 	up_state1=up_state();
 	down_state1=down_state();
+	pause_state1=pause_state();
 }
 
 void osd() {
@@ -149,7 +151,7 @@ void draw_menu() {
 		}
 		if(menu_state==(MENU_MAX+MENU_LCDSKIP)) {
 			lcd_str("lcd skip",0,0);
-			lcd_pixel_line_from_left(1,lcd_skip);
+			lcd_pixel_line_from_left(1,lcd_skip>>1);
 			lcd_arrows(0,2);
 		}
 		if(menu_state==(MENU_MAX+MENU_ADCSTEP)) {
@@ -276,7 +278,7 @@ ISR(TIMER1_COMPB_vect) {
 }
 
 ISR(ADC_vect) {
-	if((current<ALL_N)||mode==MODE_UART) {
+	if(running&&((current<ALL_N)||mode==MODE_UART)) {
 		if(mode==MODE_UART) current=ALL_N-1;
 		if(mode==MODE_SIGNAL||mode==MODE_SPECTRUM||mode==MODE_DUAL||mode==MODE_UART_BUF) {
 			if(adc_reset_c>=adc_reset) {
@@ -305,15 +307,9 @@ ISR(ADC_vect) {
 }
 
 ISR(TIMER0_OVF_vect) {
-	while(!(pause_state())&&menu_state==-1) {
-		osd();
-		if(!top_state()&&top_state1) {
-			menu_state=0;
-			redraw_menu=1;
-		}
-		buttons_update();
-		delay_us(1);
-	}
+	running=pause_state();
+	if(!pause_state1&&running) TIMSK1|=(1<<OCIE1B);
+	if(pause_state1&&!running) TIMSK1&=~(1<<OCIE1B);
 	if(menu_state==-1) {
 		if(!right_state()&&right_state1) {
 			incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,adc_step);
@@ -484,10 +480,11 @@ int main() {
 	for(;;) {
 		if(redraw_menu) {
 			lcd_all(0);
-			redraw_menu=0;
+			if(running) redraw_menu=0;
 			draw_menu();
 		}
-		if(current>=(ALL_N-1)) {
+		if((current>=(ALL_N-1))||((!running)&&redraw_menu)) {
+			if(!running) redraw_menu=0;
 			if(!array_filled) array_filled=1;
 			adc_reset_c=0;
 			if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
@@ -545,6 +542,6 @@ int main() {
 			}
 			current=0;
 		}
-		asm("nop");
+		delay_us(1);
 	}
 }
