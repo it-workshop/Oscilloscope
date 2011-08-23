@@ -4,8 +4,6 @@ Archive member included because of file (symbol)
                               main.o (__divmodhi4)
 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
                               main.o (__udivmodsi4)
-/usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodsi4.o)
-                              main.o (__divmodsi4)
 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
                               main.o (__prologue_saves__)
 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
@@ -146,7 +144,7 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1fb2
+.text           0x00000000     0x1f7e
  *(.vectors)
  .vectors       0x00000000       0x70 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/crtm644.o
                 0x00000000                __vectors
@@ -227,7 +225,7 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
                 0x000000aa                __vector_10
                 0x000000aa                __vector_16
                 0x000000aa                __vector_20
- .text          0x000000ae     0x1812 main.o
+ .text          0x000000ae     0x1814 main.o
                 0x000000ae                uart_init
                 0x000000c6                uart_putc
                 0x000000f8                uart_getc
@@ -258,51 +256,48 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
                 0x00000acc                lcd_num_from_right
                 0x00000b64                lcd_str
                 0x00000b98                draw_menu
-                0x00000fa2                main
-                0x000012ea                osd
-                0x0000138c                __vector_18
- .text          0x000018c0      0x5a8 ffft.o
-                0x000018c0                tbl_window
-                0x00001b40                fft_input
-                0x00001b9e                fft_execute
-                0x00001d32                fft_output
-                0x00001e40                fmuls_f
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodhi4.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodsi4.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_copy_data.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_clear_bss.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodhi4.o)
- .text          0x00001e68        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/libc.a(eerd_byte_atmega644.o)
-                0x00001e68                . = ALIGN (0x2)
+                0x00000fa2                osd
+                0x00001044                main
+                0x0000138e                __vector_18
+ .text          0x000018c2      0x5a8 ffft.o
+                0x000018c2                tbl_window
+                0x00001b42                fft_input
+                0x00001ba0                fft_execute
+                0x00001d34                fft_output
+                0x00001e42                fmuls_f
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodhi4.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_copy_data.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_clear_bss.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodhi4.o)
+ .text          0x00001e6a        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/libc.a(eerd_byte_atmega644.o)
+                0x00001e6a                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00001e68       0x26 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodhi4.o)
-                0x00001e68                __divmodhi4
-                0x00001e68                _div
- .text.libgcc   0x00001e8e       0x44 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
-                0x00001e8e                __udivmodsi4
- .text.libgcc   0x00001ed2       0x36 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodsi4.o)
-                0x00001ed2                __divmodsi4
- .text.libgcc   0x00001f08       0x38 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
-                0x00001f08                __prologue_saves__
- .text.libgcc   0x00001f40       0x36 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
-                0x00001f40                __epilogue_restores__
- .text.libgcc   0x00001f76        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
- .text.libgcc   0x00001f76        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_copy_data.o)
- .text.libgcc   0x00001f76        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_clear_bss.o)
- .text.libgcc   0x00001f76       0x28 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodhi4.o)
-                0x00001f76                __udivmodhi4
+ .text.libgcc   0x00001e6a       0x26 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodhi4.o)
+                0x00001e6a                __divmodhi4
+                0x00001e6a                _div
+ .text.libgcc   0x00001e90       0x44 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
+                0x00001e90                __udivmodsi4
+ .text.libgcc   0x00001ed4       0x38 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
+                0x00001ed4                __prologue_saves__
+ .text.libgcc   0x00001f0c       0x36 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
+                0x00001f0c                __epilogue_restores__
+ .text.libgcc   0x00001f42        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
+ .text.libgcc   0x00001f42        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_copy_data.o)
+ .text.libgcc   0x00001f42        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x00001f42       0x28 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodhi4.o)
+                0x00001f42                __udivmodhi4
  .text.avr-libc
-                0x00001f9e       0x10 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/libc.a(eerd_byte_atmega644.o)
-                0x00001f9e                __eerd_byte_m644
-                0x00001fae                . = ALIGN (0x2)
+                0x00001f6a       0x10 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/libc.a(eerd_byte_atmega644.o)
+                0x00001f6a                __eerd_byte_m644
+                0x00001f7a                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00001fae        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
-                0x00001fae                exit
-                0x00001fae                _exit
+ .fini9         0x00001f7a        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
+                0x00001f7a                exit
+                0x00001f7a                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -321,11 +316,11 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00001fae        0x4 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
+ .fini0         0x00001f7a        0x4 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
  *(.fini0)
-                0x00001fb2                _etext = .
+                0x00001f7e                _etext = .
 
-.data           0x00800100       0xfe load address 0x00001fb2
+.data           0x00800100       0xfe load address 0x00001f7e
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/crtm644.o
@@ -343,7 +338,6 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
  .data          0x008001fd        0x0 ffft.o
  .data          0x008001fd        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodhi4.o)
  .data          0x008001fd        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
- .data          0x008001fd        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodsi4.o)
  .data          0x008001fd        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
  .data          0x008001fd        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
  .data          0x008001fd        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
@@ -381,7 +375,6 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
  .bss           0x00800215        0x0 ffft.o
  .bss           0x00800215        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodhi4.o)
  .bss           0x00800215        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_udivmodsi4.o)
- .bss           0x00800215        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_divmodsi4.o)
  .bss           0x00800215        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_prologue.o)
  .bss           0x00800215        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_epilogue.o)
  .bss           0x00800215        0x0 /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a(_exit.o)
@@ -403,8 +396,8 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
                 0x0080059e                ymax
                 0x008005a0                u
                 0x008005a1                PROVIDE (__bss_end, .)
-                0x00001fb2                __data_load_start = LOADADDR (.data)
-                0x000020b0                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00001f7e                __data_load_start = LOADADDR (.data)
+                0x0000207c                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008005a1        0x0
                 0x008005a1                PROVIDE (__noinit_start, .)
@@ -429,14 +422,14 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr5/libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000     0x372c
+.stab           0x00000000     0x3720
  *(.stab)
  .stab          0x00000000      0x6b4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/crtm644.o
- .stab          0x000006b4     0x28a4 main.o
-                               0x28b0 (size before relaxing)
- .stab          0x00002f58      0x744 ffft.o
+ .stab          0x000006b4     0x2898 main.o
+                               0x28a4 (size before relaxing)
+ .stab          0x00002f4c      0x744 ffft.o
                                 0x750 (size before relaxing)
- .stab          0x0000369c       0x90 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/libc.a(eerd_byte_atmega644.o)
+ .stab          0x00003690       0x90 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr5/libc.a(eerd_byte_atmega644.o)
                                  0x9c (size before relaxing)
 
 .stabstr        0x00000000     0x121d

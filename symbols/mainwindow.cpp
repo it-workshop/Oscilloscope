@@ -28,7 +28,6 @@ void MainWindow::changeEvent(QEvent *e)
 }
 
 void MainWindow::update() {
-    FILE* f=fopen("output","a");
     static short unsigned int s1,s2,s3,s4,s5;
     s1=ui->checkBox->isChecked();
     s1|=ui->checkBox_2->isChecked()<<1;
@@ -74,13 +73,9 @@ void MainWindow::update() {
     s5|=ui->checkBox_38->isChecked()<<5;
     s5|=ui->checkBox_39->isChecked()<<6;
     s5|=ui->checkBox_40->isChecked()<<7;
-    static char* s=new char[6];
-    fputc(s1,f);
-    fputc(s2,f);
-    fputc(s3,f);
-    fputc(s4,f);
-    fputc(s5,f);
-    fclose(f);
+    sprintf(s,"else if(sym=='') {\n\tbuf[0]=%u;\n\tbuf[1]=%u;\n\tbuf[2]=%u;\n\tbuf[3]=%u;\n\tbuf[4]=%u;\n}",s1,s2,s3,s4,s5);
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->insertPlainText(QString(s));
 }
 
 void MainWindow::on_pushButton_clicked()

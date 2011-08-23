@@ -10,12 +10,12 @@
 
 #define lcd_arrows(x,y) lcd_str("< >",x,y)
 
-#define top_state() (PINB&0x01)
-#define right_state() (PINB&0x02)
-#define left_state() (PINB&0x04)
-#define up_state() (PINB&0x10)
-#define down_state() (PINB&0x20)
-#define pause_state() (PINB&0x08)
+#define top_state() (PINA&(1<<2))
+#define right_state() (PINA&(1<<3))
+#define left_state() (PINA&(1<<4))
+#define up_state() (PINA&(1<<6))
+#define down_state() (PINA&(1<<7))
+#define pause_state() (PINA&(1<<5))
 
 #define increment(a,min,max) a=(a==max)?min:a+1
 #define decrement(a,min,max) a=(a==min)?max:a-1
@@ -455,10 +455,8 @@ ISR(TIMER0_OVF_vect) {
 
 int main() {
 	// pins init
-	DDRB&=~(0x3f);
-	DDRA|=1<<7;
-	PORTA&=~(1<<7);
-	PORTB|=0x3f;
+	DDRA=0x00;
+	PORTA=252;
 	
 	uart_init();
 	lcd_init();
@@ -482,6 +480,7 @@ int main() {
 			lcd_all(0);
 			if(running) redraw_menu=0;
 			draw_menu();
+			if(!running) osd();
 		}
 		if((current>=(ALL_N-1))||((!running)&&redraw_menu)) {
 			if(!running) redraw_menu=0;

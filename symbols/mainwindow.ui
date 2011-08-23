@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>125</width>
-    <height>284</height>
+    <width>302</width>
+    <height>263</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -19,7 +25,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>121</width>
+      <width>131</width>
       <height>204</height>
      </rect>
     </property>
@@ -309,21 +315,21 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>204</y>
+      <x>140</x>
+      <y>50</y>
       <width>71</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
-     <string>write</string>
+     <string>OK</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>71</x>
-      <y>205</y>
+      <x>142</x>
+      <y>0</y>
       <width>51</width>
       <height>21</height>
      </rect>
@@ -332,13 +338,26 @@
      <string>reset</string>
     </property>
    </widget>
+   <widget class="QPlainTextEdit" name="plainTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>80</y>
+      <width>161</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>125</width>
+     <width>302</width>
      <height>19</height>
     </rect>
    </property>
