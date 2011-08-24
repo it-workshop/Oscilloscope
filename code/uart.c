@@ -39,43 +39,43 @@
 #endif
 
 
-#define BAUD 9600UL
+#define BAUD 57600UL
 #define UBRRVAL (F_CPU/(BAUD*16)-1)
-#define U_M	1000
-uint16_t u_c;
+
+#define uart_available() (UCSRA & (1 << RXC))
+uint8_t uart_tmp;
+uint16_t uart_counter=0;
+
+void uart_flush( void ) {
+	while(uart_available()) uart_tmp=UDR;
+}
+
 void uart_init() {
-    UBRRH = UBRRVAL >> 8;
-    UBRRL = UBRRVAL & 0xff;
-    UCSRC = UCSRC_SELECT | (1 << UCSZ1) | (1 << UCSZ0);
-    UCSRB = (1 << RXEN) | (1 << TXEN);
+	UBRRH = UBRRVAL >> 8;
+	UBRRL = UBRRVAL & 0xff;
+	UCSRC = UCSRC_SELECT | (1 << UCSZ1) | (1 << UCSZ0);
+	UCSRB = (1 << RXEN) | (1 << TXEN);
+	uart_flush();
+}
+
+void uart_close() {
+	UBRRH = 0;
+	UBRRL = 0;
+	UCSRC = 0;
+	UCSRB = 0;
 }
 
 void uart_putc(uint8_t c) {
-	u_c=0;
-    while(!(UCSRA&(1<<UDRE))&&(u_c<U_M)) {
-		u_c++;
-	}
-    UDR = c;
+	//uart_counter=0;
+	//while(!(UCSRA&(1<<UDRE))&&uart_counter<maxwait) uart_counter++;
+	while(!(UCSRA&(1<<UDRE)));
+	UDR = c;
 }
 
 uint8_t uart_getc() {
-	u_c=0;
-	static uint8_t c;
-    while(!(UCSRA & (1 << RXC))&&(u_c<U_M)) {
-		u_c++;
-	}
-	c=UDR;
-    return c;
-}
-
-void uart_flush( void ) {
-  static unsigned char dummy;
-  while ( UCSRA & (1<<RXC) ) dummy = UDR;
-}
-
-void uart_communicate(unsigned char w_byte) {
-    static uint8_t c;
-    c=uart_getc();
-    if(c=='g') uart_putc(w_byte);
-    uart_flush();
+	//uart_counter=0;
+	//while(!uart_available()&&uart_counter<maxwait) uart_counter++;
+	while(!uart_available());
+	uart_tmp=UDR;
+	return uart_tmp;
 }

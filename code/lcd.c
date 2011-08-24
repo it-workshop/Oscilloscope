@@ -39,7 +39,7 @@ void lcd_databits(uint8_t cmd,uint8_t src) {
   if(cmd==SEND_DATA) CMDPORT|=DI;
   else CMDPORT&=~DI;
   CMDPORT|=EN;
-  delay_us(6);
+  delay_us(8);
   CMDPORT&=~EN;
   CMDPORT&=~DI;
   DATAPORT=0;
@@ -73,7 +73,8 @@ void lcd_block(uint8_t x,uint8_t y,uint8_t block) {
 
 void lcd_all(uint8_t w) {
   unsigned static int i,si;
-  CMDPORT|=CSEL1|CSEL2;
+  CMDPORT|=CSEL1;
+  CMDPORT|=CSEL2;
   for(i=0;i<8;i++) {
    lcd_goto_yblock(i);
    for(si=0;si<64;si++)

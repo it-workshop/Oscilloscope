@@ -29,6 +29,7 @@
 
 #define fft_maxfreq() lcd_str("8px=",(DISPLAY_X/2),0);lcd_num_from_right(DISPLAY_X,0,(F_CPU/(adc_period*(1<<spectrum_x_zoom)))>>4);lcd_str("hz",DISPLAY_X-11,1)
 #define dfreq() lcd_str("dfreq=",0,0);lcd_num_from_right(63,1,F_CPU/adc_period)
+#define osd_delay() delay_ms(200)
 
 
 //menu items
@@ -55,7 +56,7 @@
 #define MODE_UART 5
 #define MODE_UART_BUF 6
 
-#define MODE_MAX 6
+#define MODE_MAX 5
 
 //settings
 #define LCD_SKIP_MIN 1
@@ -75,13 +76,22 @@
 
 #define adc_period OCR1B
 
+#define UART_RESP_GET 1
+#define UART_RESP_OTHER 0
+
+#define adc_request() ADCSRA|=1<<6
+#define adc_timer_play() TIMSK1|=(1<<OCIE1B);TCCR1B=0b001
+#define adc_timer_pause() TIMSK1&=~(1<<OCIE1B);TCCR1B=0
+#define buttons_timer_play() TIMSK0|=(1<<TOIE0);TCCR0B=0b101
+#define buttons_timer_pause() TIMSK0&=~(1<<TOIE0);TCCR0B=0
+
 uint16_t capture[ALL_N];
 complex_t bfly_buff[ALL_N];		/* FFT buffer */
 uint16_t output[ALL_N/2];
 
 //state variables
 uint8_t current=0,
-	mode=MODE_DUAL,
+	mode=MODE_SIGNAL,
 	top_state1=0,
 	left_state1=0,
 	right_state1=0,
@@ -99,9 +109,9 @@ int8_t menu_state=-1; //-1 disabled
 	//0 display exit 
 	//1...MENU_MAX - display option
 	//MENU_MAX+1...2*MENU_MAX - entered in
-uint16_t adc_error=20000,
-	adc_check=5,
-	adc_reset=6*ALL_N,
+uint16_t adc_error=15000,
+	adc_check=10,
+	adc_reset=10*ALL_N,
 	lcd_skip=1;
 
 //counters
@@ -121,8 +131,64 @@ inline void buttons_update() {
 }
 
 void osd() {
-	if(mode==MODE_DUAL||mode==MODE_SPECTRUM) fft_maxfreq();
-	if(mode==MODE_SIGNAL||mode==MODE_DUAL) dfreq();
+	if((mode==MODE_DUAL)||(mode==MODE_SPECTRUM)) {
+		fft_maxfreq();
+	}
+	if((mode==MODE_SIGNAL)||(mode==MODE_DUAL)||(mode==MODE_XY)) {
+		dfreq();
+	}
+}
+
+void mode_update() {
+	cli();
+	redraw_menu=0;
+	if((mode==MODE_UART_BUF)||(mode==MODE_UART)) {
+		uart_init();
+		lcd_all(0);
+		lcd_str("uart mode",0,0);
+		buttons_timer_pause();
+	}
+	else {
+		uart_close();
+	}
+	if(mode==MODE_UART) {
+		adc_timer_pause();
+		ADCSRA&=~(1<<ADIE);
+	}
+	else {
+		array_filled=0;
+		running=1;
+		ADCSRA|=(1<<ADIE);
+		if(mode!=MODE_UART_BUF) {
+			buttons_timer_play();
+		}
+		adc_timer_play();
+	}
+	current=0;
+	sei();
+}
+
+uint8_t uart_action() {
+	static uint8_t c;
+	c=uart_getc();
+	if(c=='g') {
+		return(UART_RESP_GET);
+	}
+	else if(c=='c') {
+		menu_state=-1;
+		mode=MODE_SIGNAL;
+		mode_update();
+	}
+	else if(c=='b') {
+		adc_period=uart_getc()|(uart_getc()<<8);
+		mode=MODE_UART_BUF;
+		mode_update();
+	}
+	else if(c=='n') {
+		mode=MODE_UART;
+		mode_update();
+	}
+	return(UART_RESP_OTHER);
 }
 
 inline uint8_t todisplay(uint16_t a) {
@@ -274,12 +340,11 @@ void draw_signal() {
 
 ISR(TIMER1_COMPB_vect) {
 	TCNT1=0;
-	ADCSRA|=1<<6;
+	adc_request();
 }
 
 ISR(ADC_vect) {
-	if(running&&((current<ALL_N)||mode==MODE_UART)) {
-		if(mode==MODE_UART) current=ALL_N-1;
+	if((running&&(current<ALL_N))) {
 		if(mode==MODE_SIGNAL||mode==MODE_SPECTRUM||mode==MODE_DUAL||mode==MODE_UART_BUF) {
 			if(adc_reset_c>=adc_reset) {
 				adc_reset_c=0;
@@ -289,7 +354,6 @@ ISR(ADC_vect) {
 			}
 			if(array_filled&&(abs(ADC-capture[current])>adc_error)&&current<adc_check) {
 				adc_reset_c++;
-				//error_storage=current;
 				current=0;
 				return;
 			}
@@ -298,42 +362,46 @@ ISR(ADC_vect) {
 		if(mode==MODE_XY) {
 			if(!(current%2)) {
 				ADMUX=0b01100001;
-				ADCSRA|=1<<6;
+				adc_request();
 			}
 			else ADMUX=0b01100000;
 		}
-		if(mode!=MODE_UART) current++;
+		current++;
 	}
 }
 
 ISR(TIMER0_OVF_vect) {
 	running=pause_state();
-	if(!pause_state1&&running) TIMSK1|=(1<<OCIE1B);
-	if(pause_state1&&!running) TIMSK1&=~(1<<OCIE1B);
+	if(!pause_state1&&running) {
+		adc_timer_play();
+	}
+	if(pause_state1&&!running) {
+		adc_timer_pause();
+	}
 	if(menu_state==-1) {
 		if(!right_state()&&right_state1) {
 			incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,adc_step);
 			osd();
-			delay_ms(200);
-			array_filled=0;
+			osd_delay();
+			mode_update();
 		}
 		else if(!left_state()&&left_state1) {
 			decr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,adc_step);
 			osd();
-			delay_ms(200);
-			array_filled=0;
+			osd_delay();
+			mode_update();
 		}
 		else if(!up_state()&&up_state1) {
 			increment(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX);
 			osd();
-			delay_ms(200);
-			array_filled=0;
+			osd_delay();
+			mode_update();
 		}
 		else if(!down_state()&&down_state1) {
 			decrement(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX);
 			osd();
-			delay_ms(200);
-			array_filled=0;
+			osd_delay();
+			mode_update();
 		}
 		else if(!top_state()&&top_state1) {
 			menu_state=0;
@@ -350,11 +418,13 @@ ISR(TIMER0_OVF_vect) {
 				increment(mode,MODE_MIN,MODE_MAX);
 				if(mode!=MODE_XY) ADMUX=0b01100000;
 				redraw_menu=1;
+				mode_update();
 			}
 			else if(!left_state()&&left_state1) {
 				decrement(mode,MODE_MIN,MODE_MAX);
 				if(mode!=MODE_XY) ADMUX=0b01100000;
 				redraw_menu=1;
+				mode_update();
 			}
 		}
 		else if(menu_state==(MENU_MAX+MENU_ADCPERIOD)) {
@@ -454,12 +524,12 @@ ISR(TIMER0_OVF_vect) {
 }
 
 int main() {
+	lcd_init();
+	lcd_str("booting",0,0);
+
 	// pins init
 	DDRA=0x00;
 	PORTA=252;
-	
-	uart_init();
-	lcd_init();
 	
 	//adc init
 	ADMUX=0b01100000;
@@ -467,80 +537,89 @@ int main() {
 
 	//button & adc interrupt init
 	TCCR0B=0b101;
-	TIMSK0=1<<TOIE0;
-	TIMSK1=(1<<OCIE1B);
 	TCNT0=0x00;
 	TCNT1=0x00;
 	adc_period=ADC_PERIOD_MIN;
-	TCCR1B=0b001;
+	delay_ms(100);
+	lcd_all(0);
+	mode_update();
 	sei();
-
 	for(;;) {
-		if(redraw_menu) {
-			lcd_all(0);
-			if(running) redraw_menu=0;
-			draw_menu();
-			if(!running) osd();
+		if(mode==MODE_UART) {
+			if(uart_action()==UART_RESP_GET) {
+				adc_request();
+				while(!(ADCSRA&(1<<ADIF))) {
+					asm("nop");
+				}
+				uart_putc(ADCL);
+				uart_putc(ADCH);
+			}
 		}
-		if((current>=(ALL_N-1))||((!running)&&redraw_menu)) {
-			if(!running) redraw_menu=0;
-			if(!array_filled) array_filled=1;
-			adc_reset_c=0;
-			if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
-					fft_input(capture, bfly_buff);
-					fft_execute(bfly_buff);
-					fft_output(bfly_buff, output);
-					for (m=0;m<ALL_N/2;m++) {
-						s=output[m]>>(9-spectrum_y_zoom);
-						if(s>63) s=63;
-						if(s<0) s=0;
-						for(u=0;u<7;u++) lcd_block(ALL_N/2+m,u,0);
-						if(!(m%8)) {
-							lcd_goto_xblock(ALL_N/2+m);
-							lcd_goto_yblock(2);
-							lcd_databits(SEND_DATA,0x1);
+		else {
+			if(redraw_menu) {
+				lcd_all(0);
+				if(running) redraw_menu=0;
+				draw_menu();
+			}
+			if((current>=(ALL_N-1))||((!running)&&redraw_menu)) {
+				if(!running) redraw_menu=0;
+				if(!array_filled) array_filled=1;
+				adc_reset_c=0;
+				if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
+						fft_input(capture, bfly_buff);
+						fft_execute(bfly_buff);
+						fft_output(bfly_buff, output);
+						for (m=0;m<ALL_N/2;m++) {
+							s=output[m]>>(9-spectrum_y_zoom);
+							if(s>63) s=63;
+							if(s<0) s=0;
+							for(u=0;u<7;u++) lcd_block(ALL_N/2+m,u,0);
+							if(!(m%8)) {
+								lcd_goto_xblock(ALL_N/2+m);
+								lcd_goto_yblock(2);
+								lcd_databits(SEND_DATA,0x1);
+							}
+							c=(DISPLAY_X/2)+(m<<spectrum_x_zoom);
+							if(c<DISPLAY_X) lcd_line_from_bottom(c,s);
 						}
-						c=(DISPLAY_X/2)+(m<<spectrum_x_zoom);
-						if(c<DISPLAY_X) lcd_line_from_bottom(c,s);
+				}
+				if((mode==MODE_SIGNAL)||(mode==MODE_DUAL)) {
+					if(lcd_skip_c>=lcd_skip) {
+						lcd_skip_c=1;
+						draw_signal();
 					}
-			}
-			if((mode==MODE_SIGNAL)||(mode==MODE_DUAL)) {
-				if(lcd_skip_c>=lcd_skip) {
-					lcd_skip_c=1;
-					draw_signal();
+					else lcd_skip_c++;
 				}
-				else lcd_skip_c++;
-			}
-			else if(mode==MODE_XY) {
-				if(lcd_skip_c>=lcd_skip) {
-					lcd_skip_c=1;
-					for(s=(DISPLAY_X/2);s<DISPLAY_X;s++) {
-						for(m=0;m<8;m++) lcd_block(s,m,0);
+				else if(mode==MODE_XY) {
+					if(lcd_skip_c>=lcd_skip) {
+						lcd_skip_c=1;
+						for(s=(DISPLAY_X/2);s<DISPLAY_X;s++) {
+							for(m=0;m<8;m++) lcd_block(s,m,0);
+						}
+					}
+					else lcd_skip_c++;
+					
+					for(s=0;s<DISPLAY_X;s+=2) {
+						lcd_pixel_share(ALL_N/2+(capture[s]>>9),63-(capture[s+1]>>9));
 					}
 				}
-				else lcd_skip_c++;
-				
-				for(s=0;s<DISPLAY_X;s+=2) {
-					lcd_pixel_share(ALL_N/2+(capture[s]>>9),63-(capture[s+1]>>9));
+				else if(mode==MODE_UART_BUF) {
+					adc_timer_pause();
+					for(m=0;m<ALL_N;m++) {
+						if(uart_action()==UART_RESP_GET) {
+							uart_putc(capture[m]^(0xff<<8));
+							uart_putc(capture[m]>>8);
+						}
+						else {
+							m=ALL_N;
+						}
+					}
+					adc_timer_play();
+					uart_flush();
 				}
+				current=0;
+				if(!running) osd();
 			}
-			else if(mode==MODE_UART_BUF) {
-				m=0;u=0;
-				while(m<ALL_N) {
-					s=capture[m++]>>7;
-					if(s>=256) uart_communicate(254);
-					else uart_communicate(s);
-					if(u_c==U_M) u++;
-					if(u>=10) m=ALL_N;
-				}
-			}
-			else if(mode==MODE_UART) {
-				s=capture[ALL_N-1]>>7;
-				if(s>=256) uart_communicate(254);
-				else uart_communicate(s);
-			}
-			current=0;
 		}
-		delay_us(1);
 	}
 }
