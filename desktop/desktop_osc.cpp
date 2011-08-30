@@ -20,7 +20,7 @@ void desktop_osc::init_graph() {
             d_x[i]=(msecs?msecs:1)*i;
             d_y[i]=0;
         }
-    }
+}
     ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, PLOT_SIZE*(msecs?msecs:1));
     ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 5);
 }
@@ -30,6 +30,7 @@ desktop_osc::desktop_osc(QWidget *parent) :
         ui(new Ui::desktop_osc)
 {
     msecs=0;
+    answered=true;
     ALL_N=128;
     current=0;
     mode=MODE_UART_BUF;
@@ -88,19 +89,22 @@ void desktop_osc::to_graph(double y) {
 void desktop_osc::on_pushButton_clicked() {
     mode=MODE_UART;
     msecs=ui->spinBox->value();
+    answered=true;
     init_graph();
 }
 
 void desktop_osc::update() {
-    if((current<ALL_N)||(mode==MODE_UART)) {
+    if(answered||mode==MODE_UART) {
+        answered=false;
         uartobj.uwrite('g');
+        uartobj.uread_error_reset();
         unsigned int r=uartobj.uread()|(uartobj.uread()<<8);
+        if(uartobj.uread_error()) {
+            timer.stop();
+        }
         to_graph(double(r)/13107);
         current++;
-    }
-    else {
-        current=0;
-        timer.stop();
+        answered=true;
     }
 }
 
@@ -117,10 +121,12 @@ void desktop_osc::on_pushButton_4_clicked() {
     mode=MODE_UART_BUF;
     timer.stop();
     period=ui->spinBox_2->value();
+    uartobj.flush();
     uartobj.uwrite('b');
     uartobj.uwrite(period^(0xff<<8));
     uartobj.uwrite(period>>8);
     current=0;
     msecs=1;
+    answered=true;
     init_graph();
 }

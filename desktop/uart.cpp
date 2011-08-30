@@ -19,11 +19,11 @@ uart::uart() {
     tty_fd=-1;
     device="/dev/ttyUSB0";
     rate=9600;
-    maxwait=10;
+    maxwait=1000;
 }
 
 void uart::uopen() {
-    if(!active()) {
+    if(tty_fd==-1) {
         fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
         memset(&tio,0,sizeof(tio));
         tio.c_iflag=0;
@@ -42,19 +42,23 @@ void uart::uopen() {
 }
 
 void uart::uclose() {
-    if(active()) {
+    if(tty_fd!=-1) {
         close(tty_fd);
         tty_fd=-1;
     }
 }
 
-bool uart::active() {
-    return(tty_fd!=-1);
+bool uart::uread_error() {
+    return(uerror);
 }
 
 void uart::ureopen() {
     uclose();
     uopen();
+}
+
+void uart::uread_error_reset() {
+    uerror=false;
 }
 
 void uart::set_rate(unsigned int newrate) {
@@ -77,6 +81,7 @@ void uart::flush() {
 short unsigned int uart::uread() {
     short unsigned int a=0;
     mtime(true);
-    while((read(tty_fd,&a,1)<=0)&&(mtime(false)<maxwait));
+    while((read(tty_fd,&a,1)<=0)&&((mtime(false)<maxwait)));
+    if(mtime(false)>=maxwait) uerror=true;
     return(a);
 }

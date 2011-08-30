@@ -26,6 +26,7 @@ private:
     unsigned int ALL_N;
     unsigned int current;
     unsigned short int mode;
+    bool answered;
     uart uartobj;
     double d_x[PLOT_SIZE];
     double d_y[PLOT_SIZE];

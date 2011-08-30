@@ -1,16 +1,8 @@
 #include <avr/eeprom.h>
+#include <util/delay.h>
+#include "lcd.h"
 
 #define lcd_arrows(x,y) lcd_str("< >",x,y)
-
-void delay_ms(unsigned int delay) {
-	while(delay--)
-		_delay_ms(1);
-}
-
-void delay_us(unsigned long long  int delay) {
-	while(delay--)
-		_delay_us(1);
-}
 
 /* configuration */
 //lcd's setup pins PORT
@@ -39,7 +31,7 @@ void lcd_databits(uint8_t cmd,uint8_t src) {
   if(cmd==SEND_DATA) CMDPORT|=DI;
   else CMDPORT&=~DI;
   CMDPORT|=EN;
-  delay_us(8);
+  _delay_us(8);
   CMDPORT&=~EN;
   CMDPORT&=~DI;
   DATAPORT=0;
@@ -87,37 +79,42 @@ void lcd_init() {
   CMDPORT=0x00;
   DATADDR=0xff;
   DATAPORT=0x00;
-  delay_ms(1000);
   CMDPORT=RS|CSEL1|CSEL2;
+  _delay_ms(100);
   lcd_databits(SEND_CMD,0x3f);
   lcd_databits(SEND_CMD,0xc0);
   lcd_databits(SEND_CMD,0x40);
   lcd_databits(SEND_CMD,0xb8);
   lcd_all(0);
 }
-void lcd_sym(uint8_t sym) {
+void lcd_sym(uint8_t sym,uint8_t x,uint8_t y) {
 	static uint8_t t;
-	for(t=0;t<5;t++)
+	for(t=0;t<5;t++) {
+		lcd_goto(x,y);
 		lcd_databits(SEND_DATA,eeprom_read_byte((uint8_t*) (5*sym+t)));
+		x++;
+	}
+	lcd_goto(x,y);
 	lcd_databits(SEND_DATA,0);
 }
 
 
 void lcd_str(char* s,uint8_t x,uint8_t y) {
 	while(*s) {
-		if(x!=-1&&y!=-1) {
-			lcd_goto_xblock(x);
-			lcd_goto_yblock(y);
+		if(x>=122||(*s=='\n')) {
+			x=0;
+			y++;
+			if(*s=='\n') s++;
 		}
-		lcd_sym(*s++);
-		x+=6;
+		lcd_sym(*s++,x,y);
+		if(x<122) x+=6;
 	}
 }
 
 uint8_t lcd_read(uint8_t x,uint8_t y) {
 	lcd_goto(x,y);
 	CMDPORT|=DI|RW;
-	delay_us(6);
+	_delay_us(6);
 	CMDPORT&=~(DI|RW);
 	return(DATAPORT);
 	
@@ -165,15 +162,11 @@ void lcd_pixel_line_from_left(uint8_t y, uint16_t v) {
 void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n) {
 	short unsigned int m,x=maxx-FONT_SIZE-1;
 	if(!n) {
-		lcd_goto_xblock(x);
-		lcd_goto_yblock(y);
-		lcd_sym('0');
+		lcd_sym('0',x,y);
 	}
 	while(n) {
 		m=n%10;
-		lcd_goto_xblock(x);
-		lcd_goto_yblock(y);
-		lcd_sym('0'+m);
+		lcd_sym('0'+m,x,y);
 		x-=FONT_SIZE+1;
 		n-=m;
 		n/=10;

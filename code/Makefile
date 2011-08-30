@@ -1,5 +1,5 @@
 PRG            = main
-OBJ            = main.o ffft.o
+OBJ            = main.o ffft.o menu.o lcd.o uart.o draw.o buttons.o settings.o
 MODEL          = 644
 FREQ           = 20000000UL
 MCU_TARGET     = atmega$(MODEL)

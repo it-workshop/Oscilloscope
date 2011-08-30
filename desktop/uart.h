@@ -13,10 +13,11 @@ private:
     unsigned int rate;
     char* device;
     int maxwait;
-    bool writing;
+    bool uerror;
 public:
     uart();
-    bool active();
+    bool uread_error();
+    void uread_error_reset();
     void uopen();
     void uclose();
     void ureopen();
