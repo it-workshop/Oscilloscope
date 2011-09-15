@@ -8,6 +8,7 @@
 #include "settings.h"
 #include "lcd.h"
 #include "uart.h"
+#include "menu.h"
 
 extern uint8_t current,
 	mode,
@@ -73,7 +74,7 @@ void mode_update() {
 
 inline void return_control() {
 	mode=MODE_DUAL;
-	menu_state=-1;
+	menu_state=MENU_NONE;
 	lcd_all(0);
 	mode_update();
 }

@@ -2,8 +2,6 @@
 #include <util/delay.h>
 #include "lcd.h"
 
-#define lcd_arrows(x,y) lcd_str("< >",x,y)
-
 /* configuration */
 //lcd's setup pins PORT
 #define CMDPORT PORTD
@@ -27,65 +25,65 @@
 #define SEND_DATA 2
 
 void lcd_databits(uint8_t cmd,uint8_t src) {
-  DATAPORT=src;
-  if(cmd==SEND_DATA) CMDPORT|=DI;
-  else CMDPORT&=~DI;
-  CMDPORT|=EN;
-  _delay_us(8);
-  CMDPORT&=~EN;
-  CMDPORT&=~DI;
-  DATAPORT=0;
+	DATAPORT=src;
+	if(cmd==SEND_DATA) CMDPORT|=DI;
+	else CMDPORT&=~DI;
+	CMDPORT|=EN;
+	_delay_us(8);
+	CMDPORT&=~EN;
+	CMDPORT&=~DI;
+	DATAPORT=0;
 }
 
 void lcd_goto_xblock(uint8_t s) { //s={0,1...127}
-  if(s>=64) {
-    CMDPORT|=CSEL2;
-    CMDPORT&=~CSEL1;
-    lcd_databits(SEND_CMD,(1<<6)|(s-64));
-  }
-  else {
-    CMDPORT|=CSEL1;
-    CMDPORT&=~CSEL2;
-    lcd_databits(SEND_CMD,(1<<6)|s);
-  }
+	if(s>=64) {
+		CMDPORT|=CSEL2;
+		CMDPORT&=~CSEL1;
+		lcd_databits(SEND_CMD,(1<<6)|(s-64));
+	}
+	else {
+		CMDPORT|=CSEL1;
+		CMDPORT&=~CSEL2;
+		lcd_databits(SEND_CMD,(1<<6)|s);
+	}
 }
 
 void lcd_goto_yblock(uint8_t s) { //s={0,1...7}
-  lcd_databits(SEND_CMD,0xb8|s);
+	lcd_databits(SEND_CMD,0xb8|s);
 }
 void lcd_goto(uint8_t x,uint8_t y) {
 	lcd_goto_xblock(x);
 	lcd_goto_yblock(y);
 }
 void lcd_block(uint8_t x,uint8_t y,uint8_t block) {
-  lcd_goto_xblock(x);
-  lcd_goto_yblock(y);
-  lcd_databits(SEND_DATA,block);
+	lcd_goto_xblock(x);
+	lcd_goto_yblock(y);
+	lcd_databits(SEND_DATA,block);
 }
 
 void lcd_all(uint8_t w) {
-  unsigned static int i,si;
-  CMDPORT|=CSEL1;
-  CMDPORT|=CSEL2;
-  for(i=0;i<8;i++) {
-   lcd_goto_yblock(i);
-   for(si=0;si<64;si++)
-     lcd_databits(SEND_DATA,w);
-  }
+	unsigned static int i,si;
+	CMDPORT|=CSEL1;
+	CMDPORT|=CSEL2;
+	for(i=0;i<8;i++) {
+	 lcd_goto_yblock(i);
+	 for(si=0;si<64;si++)
+		 lcd_databits(SEND_DATA,w);
+	}
 }
 
 void lcd_init() {
-  CMDDDR|=CSEL1|CSEL2|RW|RS|EN|DI;
-  DATADDR=0xff;
-  DATAPORT=0x00;
-  CMDPORT|=CSEL1|CSEL2|RS;
-  CMDPORT&=~(RW|EN|DI);
-  _delay_ms(100);
-  lcd_databits(SEND_CMD,0x3f);
-  lcd_databits(SEND_CMD,0xc0);
-  lcd_databits(SEND_CMD,0x40);
-  lcd_databits(SEND_CMD,0xb8);
-  lcd_all(0);
+	CMDDDR|=CSEL1|CSEL2|RW|RS|EN|DI;
+	DATADDR=0xff;
+	DATAPORT=0x00;
+	CMDPORT|=CSEL1|CSEL2|RS;
+	CMDPORT&=~(RW|EN|DI);
+	_delay_ms(100);
+	lcd_databits(SEND_CMD,0x3f);
+	lcd_databits(SEND_CMD,0xc0);
+	lcd_databits(SEND_CMD,0x40);
+	lcd_databits(SEND_CMD,0xb8);
+	lcd_all(0);
 }
 void lcd_sym(uint8_t sym,uint8_t x,uint8_t y) {
 	static uint8_t t;
@@ -107,7 +105,10 @@ void lcd_str(char* s,uint8_t x,uint8_t y) {
 			if(*s=='\n') s++;
 		}
 		lcd_sym(*s++,x,y);
-		if(x<122) x+=6;
+		if(x<122) {
+			if(*(s-1)==' ') x+=5;
+			else x+=6;
+		}
 	}
 }
 
@@ -121,7 +122,7 @@ uint8_t lcd_read(uint8_t x,uint8_t y) {
 }
 
 inline void lcd_pixel(uint8_t x,uint8_t y) {
-    lcd_block(x,(y-y%8)/8,1<<(y%8));
+		lcd_block(x,(y-y%8)/8,1<<(y%8));
 }
 
 void lcd_pixel_share(uint8_t x,uint8_t y) {

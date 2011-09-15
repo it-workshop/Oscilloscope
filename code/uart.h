@@ -2,26 +2,26 @@
 #define UART_H
 
 #ifdef UDR0
-#define UBRRH UBRR0H
-#define UBRRL UBRR0L
-#define UDR UDR0
+	#define UBRRH UBRR0H
+	#define UBRRL UBRR0L
+	#define UDR UDR0
 
-#define UCSRA UCSR0A
-#define UDRE UDRE0
-#define RXC RXC0
+	#define UCSRA UCSR0A
+	#define UDRE UDRE0
+	#define RXC RXC0
 
-#define UCSRB UCSR0B
-#define RXEN RXEN0
-#define TXEN TXEN0
-#define RXCIE RXCIE0
+	#define UCSRB UCSR0B
+	#define RXEN RXEN0
+	#define TXEN TXEN0
+	#define RXCIE RXCIE0
 
-#define UCSRC UCSR0C
-#define URSEL 
-#define UCSZ0 UCSZ00
-#define UCSZ1 UCSZ01
-#define UCSRC_SELECT 0
+	#define UCSRC UCSR0C
+	#define URSEL 
+	#define UCSZ0 UCSZ00
+	#define UCSZ1 UCSZ01
+	#define UCSRC_SELECT 0
 #else
-#define UCSRC_SELECT (1 << URSEL)
+	#define UCSRC_SELECT (1 << URSEL)
 #endif
 
 #define BAUD 57600UL

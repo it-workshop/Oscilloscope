@@ -1,7 +1,9 @@
 #ifndef LCD_H
 #define LCD_H
+
 #include <stdio.h>
-#define lcd_arrows(x,y) lcd_str("< >",x,y)
+
+#define lcd_arrows(x,y) lcd_str("<>",x,y)
 /* configuration */
 //lcd's setup pins PORT
 #define CMDPORT PORTD
@@ -24,6 +26,8 @@
 #define SEND_CMD 1
 #define SEND_DATA 2
 
+#define SYM_UPDOWN '^'
+
 void lcd_databits(uint8_t cmd,uint8_t src);
 void lcd_goto_xblock(uint8_t s);
 void lcd_goto_yblock(uint8_t s);
@@ -41,4 +45,5 @@ void lcd_pixel_line_from_left(uint8_t y, uint16_t v);
 void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n);
 inline uint8_t lcd_yblockof(uint8_t y);
 void lcd_constx_line(uint8_t x,uint8_t ymin,uint8_t ymax);
+
 #endif

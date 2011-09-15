@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2006-2011 by Roland Riegel <feedback@roland-riegel.de>
  *
@@ -30,13 +29,12 @@ extern uint8_t current,
 	down_state1,
 	pause_state1,
 	redraw_menu,
-	adc_step,
 	array_filled,
 	error_storage,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
+	menu_state,
 	running;
-extern int8_t menu_state;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,

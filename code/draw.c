@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "draw.h"
 #include "lcd.h"
+#include "menu.h"
 #include "settings.h"
 
 extern uint8_t m,s,u;
@@ -17,20 +18,19 @@ extern uint8_t current,
 	down_state1,
 	pause_state1,
 	redraw_menu,
-	adc_step,
 	array_filled,
 	error_storage,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
+	menu_state,
 	running;
-extern int8_t menu_state;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
 	lcd_skip;
 
 inline uint8_t todisplay(uint16_t a) {
-	if(menu_state==-1) return(DISPLAY_Y-1-(a>>9));
+	if(menu_state==MENU_NONE) return(DISPLAY_Y-1-(a>>9));
 	else return(DISPLAY_Y-1-(a>>10));
 }
 
@@ -80,7 +80,7 @@ void draw_signal() {
 			}
 			u=m;
 		}
-		if(menu_state==-1) {
+		if(menu_state==MENU_NONE) {
 			for(s=0;s<8;s++) lcd_block(u,s,0);
 		}
 		else {
@@ -101,15 +101,13 @@ void osd() {
 }
 
 void welcome() {
-	lcd_str("digital",0,0);
-	lcd_str("oscill.",10,1);
-	lcd_str("v1.0",0,2);
-	lcd_str("fft lib.",0,4);
-	lcd_str("by chan",0,5);
-	lcd_str("sergey",(DISPLAY_X/2),0);
-	lcd_str("volodin",70,1);
-	lcd_str("2011",80,2);
-	lcd_str("i.179e.net",(DISPLAY_X/2),4);
+	lcd_str("digital oscilloscope\n  v1.0",0,0);
+	lcd_str("volodin sergey\ni.179e.net",0,3);
+	lcd_str("fft lib. by chan",0,6);
+}
+
+inline void dfreq_only(uint8_t x,uint8_t y) {
+	lcd_num_from_right(x,y,F_CPU/adc_period);
 }
 
 inline void fft_maxfreq() {
@@ -118,5 +116,6 @@ inline void fft_maxfreq() {
 	lcd_str("hz",DISPLAY_X-13,1);
 }
 inline void dfreq() {
-	lcd_str("dfreq=",0,0);lcd_num_from_right((DISPLAY_X/2)-1,1,F_CPU/adc_period);
+	lcd_str("dfreq=",0,0);
+	dfreq_only((DISPLAY_X/2)-1,1);
 }

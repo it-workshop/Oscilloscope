@@ -56,19 +56,9 @@
   <variable>buildConfiguration-Debug</variable>
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
-   <value key="QtVersionId" type="int">0</value>
+   <value key="QtVersionId" type="int">6</value>
    <value key="ToolChain" type="int">0</value>
-   <value key="addQDumper" type=""></value>
    <value key="buildConfiguration" type="int">2</value>
-  </valuemap>
- </data>
- <data>
-  <variable>buildConfiguration-Release</variable>
-  <valuemap type="QVariantMap">
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
-   <value key="QtVersionId" type="int">0</value>
-   <value key="addQDumper" type=""></value>
-   <value key="buildConfiguration" type="int">0</value>
   </valuemap>
  </data>
  <data>
@@ -76,15 +66,15 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-gNozseOSkj,guid=34581f4666b9d2a5fd2669ce0000002c</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-8IKdkbhhXP,guid=3f17f9348a76ee5eba7901eb0000002b</value>
     <value type="QString">DESKTOP_SESSION=default</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">GDMSESSION=default</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_GB.utf8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-jU7yVq</value>
-    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-wvPdpf/S.gpg-agent:2623:1</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-gJoRX6</value>
+    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-rWopC9/S.gpg-agent:3027:1</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/seriy/.gtkrc-1.2-gnome2</value>
     <value type="QString">HOME=/home/seriy</value>
@@ -96,16 +86,16 @@
     <value type="QString">PATH=/home/QtSDK/Desktop/Qt/4.8.0/gcc/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
     <value type="QString">PWD=/home/seriy</value>
     <value type="QString">QTDIR=/home/QtSDK/Desktop/Qt/4.8.0/gcc/</value>
-    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2575,unix/seriy-desktop:/tmp/.ICE-unix/2575</value>
+    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2979,unix/seriy-desktop:/tmp/.ICE-unix/2979</value>
     <value type="QString">SHELL=/bin/bash</value>
-    <value type="QString">SSH_AGENT_PID=2609</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-jU7yVq/ssh</value>
+    <value type="QString">SSH_AGENT_PID=3013</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-gJoRX6/ssh</value>
     <value type="QString">USER=seriy</value>
     <value type="QString">USERNAME=seriy</value>
     <value type="QString">WINDOWPATH=7</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-ww5cM7/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-OmkgnV/database</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/share/gdm/:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1314659072.383714-1011166916</value>
+    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1315749332.578612-1239694635</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
     <value type="QString">/home/seriy/svn/osc/desktop/desktop.pro</value>
@@ -124,15 +114,15 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-gNozseOSkj,guid=34581f4666b9d2a5fd2669ce0000002c</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-8IKdkbhhXP,guid=3f17f9348a76ee5eba7901eb0000002b</value>
     <value type="QString">DESKTOP_SESSION=default</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">GDMSESSION=default</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_GB.utf8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-jU7yVq</value>
-    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-wvPdpf/S.gpg-agent:2623:1</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-gJoRX6</value>
+    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-rWopC9/S.gpg-agent:3027:1</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/seriy/.gtkrc-1.2-gnome2</value>
     <value type="QString">HOME=/home/seriy</value>
@@ -144,16 +134,16 @@
     <value type="QString">PATH=/home/QtSDK/Desktop/Qt/4.8.0/gcc/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
     <value type="QString">PWD=/home/seriy</value>
     <value type="QString">QTDIR=/home/QtSDK/Desktop/Qt/4.8.0/gcc/</value>
-    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2575,unix/seriy-desktop:/tmp/.ICE-unix/2575</value>
+    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2979,unix/seriy-desktop:/tmp/.ICE-unix/2979</value>
     <value type="QString">SHELL=/bin/bash</value>
-    <value type="QString">SSH_AGENT_PID=2609</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-jU7yVq/ssh</value>
+    <value type="QString">SSH_AGENT_PID=3013</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-gJoRX6/ssh</value>
     <value type="QString">USER=seriy</value>
     <value type="QString">USERNAME=seriy</value>
     <value type="QString">WINDOWPATH=7</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-ww5cM7/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-OmkgnV/database</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/share/gdm/:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1314659072.383714-1011166916</value>
+    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1315749332.578612-1239694635</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -175,28 +165,9 @@
   </valuemap>
  </data>
  <data>
-  <variable>buildconfiguration-Release-buildstep0</variable>
-  <valuemap type="QVariantMap">
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
-  </valuemap>
- </data>
- <data>
-  <variable>buildconfiguration-Release-buildstep1</variable>
-  <valuemap type="QVariantMap">
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
-  </valuemap>
- </data>
- <data>
-  <variable>buildconfiguration-Release-cleanstep0</variable>
-  <valuemap type="QVariantMap">
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
-  </valuemap>
- </data>
- <data>
   <variable>buildconfigurations</variable>
   <valuelist type="QVariantList">
    <value type="QString">Debug</value>
-   <value type="QString">Release</value>
   </valuelist>
  </data>
  <data>

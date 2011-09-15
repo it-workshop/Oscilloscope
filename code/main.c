@@ -14,14 +14,11 @@
 #include "buttons.h"
 
 uint16_t capture[ALL_N];
-complex_t bfly_buff[ALL_N];		/* FFT buffer */
+complex_t bfly_buff[ALL_N]; /* FFT buffer */
 uint16_t output[ALL_N/2];
 
 
-int8_t menu_state=-1; //-1 disabled
-	//0 display exit 
-	//1...MENU_MAX - display option
-	//MENU_MAX+1...2*MENU_MAX - entered in
+uint8_t menu_state=MENU_NONE; //see menu.h
 
 //state variables
 uint8_t current=0,
@@ -33,7 +30,6 @@ uint8_t current=0,
 	down_state1=0,
 	pause_state1=0,
 	redraw_menu=0,
-	adc_step=100,
 	array_filled=0,
 	error_storage=0,
 	spectrum_x_zoom=0,
@@ -89,7 +85,6 @@ ISR(ADC_vect) {
 	}
 }
 
-
 int main() {
 	lcd_init();
 	uart_init();
@@ -110,7 +105,7 @@ int main() {
 	TCNT0=0x00;
 	TCNT1=0x00;
 	adc_period=ADC_PERIOD_MIN;
-	
+
 	_delay_ms(1000);
 	lcd_all(0);
 	mode_update();
@@ -181,7 +176,7 @@ int main() {
 					}
 				}
 				current=0;
-				if(!running&&menu_state==-1) osd();
+				if(!running&&!menu_state) osd();
 			}
 		}
 		_delay_ms(1);
