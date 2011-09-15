@@ -22,7 +22,8 @@ extern uint8_t current,
 	error_storage,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
-	running;
+	running,
+	input;
 extern int8_t menu_state;
 extern uint16_t adc_error,
 	adc_check,
@@ -128,11 +129,11 @@ void buttons_process() {
 			}
 		}
 		else if(menu_state==(MENU_MAX+MENU_ADCSTEP)) {
-			if(!right_state()&&right_state1) {
+			if(!right_state()/*&&right_state1*/) {
 				increment(adc_step,ADC_STEP_MIN,ADC_PERIOD_MAX);
 				redraw_menu=1;
 			}
-			else if(!left_state()&&left_state1) {
+			else if(!left_state()/*&&left_state1*/) {
 				decrement(adc_step,ADC_STEP_MIN,ADC_PERIOD_MAX);
 				redraw_menu=1;
 			}
@@ -165,6 +166,13 @@ void buttons_process() {
 			if(!left_state()&&left_state1) {
 				decrement(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_Y);
 				redraw_menu=1;
+			}
+		}
+		else if(menu_state==(MENU_MAX+MENU_INPUTSELECT)) {
+			if((!right_state()&&right_state1)||(!left_state()&&left_state1)) {
+				input=input?0:1;
+				redraw_menu=1;
+				mode_update();
 			}
 		}
 	}

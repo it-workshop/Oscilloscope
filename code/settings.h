@@ -8,13 +8,15 @@
 #define LCD_SKIP_MAX 4096
 #define LCD_SKIP_STEP 5
 
-#define ADC_PERIOD_MIN 80
+#define ADC_PERIOD_MIN 100
 #define ADC_PERIOD_MAX 65535
 
 #define ADC_STEP_MIN 1
 
-#define ADC_ERROR_STEP ALL_N
+#define ADC_ERROR_STEP ALL_N/4
 #define ADC_ERROR_MAX 65535
+
+#define ADC_RESET_DEFAULT (5*ALL_N)
 
 #define SPECTRUM_ZOOM_MIN 0
 #define SPECTRUM_ZOOM_MAX_Y 6
@@ -65,6 +67,8 @@
 
 #define adc_freq_normal() ADCSRA=0b10011101
 #define adc_freq_fast() ADCSRA=0b10011010
+#define adc_first()  ADMUX=0b01100000
+#define adc_second() ADMUX=0b01100001
 
 void mode_update();
 inline void return_control();

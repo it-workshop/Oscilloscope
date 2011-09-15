@@ -38,10 +38,11 @@ uint8_t current=0,
 	error_storage=0,
 	spectrum_x_zoom=0,
 	spectrum_y_zoom=0,
-	running=1;
-uint16_t adc_error=3000,
+	running=1,
+	input=0;
+uint16_t adc_error=1,
 	adc_check=2,
-	adc_reset=100*ALL_N,
+	adc_reset=ADC_RESET_DEFAULT,
 	lcd_skip=1;
 
 //counters
@@ -79,10 +80,10 @@ ISR(ADC_vect) {
 		capture[current]=ADC>>1;
 		if(mode==MODE_XY) {
 			if(!(current%2)) {
-				ADMUX=0b01100001;
+				adc_second();
 				adc_request();
 			}
-			else ADMUX=0b01100000;
+			else adc_first();
 		}
 		current++;
 	}
@@ -94,12 +95,14 @@ int main() {
 	uart_init();
 	welcome();
 
+	SPCR=(1<<6)|0b11|(1<<4);
+
 	// pins init
 	DDRA=0x00;
 	PORTA=252;
 	
 	//adc init
-	ADMUX=0b01100000;
+	adc_first();
 	adc_freq_normal();
 	
 	//button & adc interrupt init
@@ -107,6 +110,7 @@ int main() {
 	TCNT0=0x00;
 	TCNT1=0x00;
 	adc_period=ADC_PERIOD_MIN;
+	
 	_delay_ms(1000);
 	lcd_all(0);
 	mode_update();

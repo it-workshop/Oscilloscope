@@ -21,7 +21,8 @@ extern uint8_t current,
 	error_storage,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
-	running;
+	running,
+	input;
 extern int8_t menu_state;
 extern uint16_t adc_error,
 	adc_check,
@@ -61,6 +62,16 @@ void draw_menu() {
 		if(menu_state==(MENU_MAX+MENU_ADCRESET)) {
 			lcd_str("adc reset",0,0);
 			lcd_num_from_right((DISPLAY_X/2),1,adc_reset);
+			lcd_arrows(0,2);
+		}
+		if(menu_state==(MENU_MAX+MENU_INPUTSELECT)) {
+			lcd_str("input sel.",0,0);
+			if(input==0) {
+				lcd_str("first",0,1);
+			}
+			else if(input==1) {
+				lcd_str("second",0,1);
+			}
 			lcd_arrows(0,2);
 		}
 		if(menu_state==(MENU_MAX+MENU_ADCCHECK)) {
@@ -115,6 +126,7 @@ void draw_menu() {
 		if(menu_state==MENU_ABOUT) lcd_str("about",0,1);
 		if(menu_state==MENU_MODE) lcd_str("mode",0,1);
 		if(menu_state==MENU_UART) lcd_str("pc mode",0,1);
+		if(menu_state==MENU_INPUTSELECT) lcd_str("input sel.",0,1);
 		lcd_arrows(0,2);
 	}
 }

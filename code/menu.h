@@ -12,9 +12,10 @@
 #define MENU_SPECTRUMXZOOM 8
 #define MENU_SPECTRUMYZOOM 9
 #define MENU_UART 10
-#define MENU_ABOUT 11
+#define MENU_INPUTSELECT 11
+#define MENU_ABOUT 12
 
-#define MENU_MAX 11
+#define MENU_MAX 12
 
 void draw_menu();
 

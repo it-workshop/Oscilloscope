@@ -50,11 +50,11 @@ void uart_flush() {
 }
 
 void uart_init() {
-	UBRRH = UBRRVAL >> 8;
+	/*UBRRH = UBRRVAL >> 8;
 	UBRRL = UBRRVAL & 0xff;
 	UCSRC = UCSRC_SELECT | (1 << UCSZ1) | (1 << UCSZ0);
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE0) | (1 << TXCIE0);
-	uart_flush();
+	uart_flush();*/
 }
 
 void uart_putc(uint8_t c) {

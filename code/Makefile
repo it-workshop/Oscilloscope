@@ -33,20 +33,17 @@ clean:
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 	rm -rf $(PRG).hex
 
-
-
-
-
 lst:  $(PRG).lst
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@
 
 %.o : %.S
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
+fuse:
+	$(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U lfuse:w:0xff:m -U hfuse:w:0xd1:m -U efuse:w:0xff:m
 
-
-
-
+fonts:
+	 $(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U eeprom:w:eeprom_fonts
 
 text: hex
 hex:  $(PRG).hex

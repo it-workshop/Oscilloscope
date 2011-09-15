@@ -24,7 +24,8 @@ extern uint8_t current,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
 	running,
-	menu_state;
+	menu_state,
+	input;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
@@ -50,6 +51,12 @@ void mode_update() {
 			adc_freq_fast();
 		}
 		else {
+			if(input==0) {
+				adc_first();
+			}
+			else if(input==1) {
+				adc_second();
+			}
 			adc_freq_normal();
 		}
 		array_filled=0;

@@ -75,11 +75,11 @@ void lcd_all(uint8_t w) {
 }
 
 void lcd_init() {
-  CMDDDR=CSEL1|CSEL2|RW|RS|EN|DI;
-  CMDPORT=0x00;
+  CMDDDR|=CSEL1|CSEL2|RW|RS|EN|DI;
   DATADDR=0xff;
   DATAPORT=0x00;
-  CMDPORT=RS|CSEL1|CSEL2;
+  CMDPORT|=CSEL1|CSEL2|RS;
+  CMDPORT&=~(RW|EN|DI);
   _delay_ms(100);
   lcd_databits(SEND_CMD,0x3f);
   lcd_databits(SEND_CMD,0xc0);
