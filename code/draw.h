@@ -1,7 +1,14 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-void draw_signal();
+#define DRAW_SIGNAL_DUAL 1
+#define DRAW_SIGNAL 2
+
+#define DRAW_LINES 1
+#define DRAW_DOTS 2
+
+
+void draw_signal(uint8_t draw_what,uint8_t draw_type);
 
 inline void fft_maxfreq();
 inline void dfreq();

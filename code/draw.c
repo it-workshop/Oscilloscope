@@ -34,49 +34,51 @@ inline uint8_t todisplay(uint16_t a) {
 	else return(DISPLAY_Y-1-(a>>10));
 }
 
-void draw_signal() {
+void draw_signal(uint8_t draw_what,uint8_t draw_type) {
 	for(m=0;m<ALL_N;m++) {
 		c=todisplay(capture[m]);
-		if(mode==MODE_DUAL)  {
-			//prev
-			if(m>1) {
-				c1=todisplay(capture[m-2]);
-				if(c1<c) ymin=(c1+c)>>1;
-				if(c1>c) ymax=(c1+c)>>1;
+		if(draw_what==DRAW_SIGNAL_DUAL) {
+			if(draw_type==DRAW_LINES) {
+				//prev
+				if(m>1) {
+					c1=todisplay(capture[m-2]);
+					if(c1<c) ymin=(c1+c)>>1;
+					if(c1>c) ymax=(c1+c)>>1;
+				}
+				else {
+					ymin=c;
+					ymax=c;
+				}
+				
+				//next
+				if(m<(ALL_N-2)) {
+					c1=todisplay(capture[m+2]);
+					if(c1<c) ymin=min(ymin,(c+c1)>>1);
+					if(c1>c) ymax=max(ymax,(c1+c)>>1);
+				}
 			}
-			else {
-				ymin=c;
-				ymax=c;
-			}
-			
-			//next
-			if(m<(ALL_N-2)) {
-				c1=todisplay(capture[m+2]);
-				if(c1<c) ymin=min(ymin,(c+c1)>>1);
-				if(c1>c) ymax=max(ymax,(c1+c)>>1);
-			}
-			
 			u=m/2;
 			m++;
 		}
 		else {
-			
-			//prev
-			if(m) {
-				c1=todisplay(capture[m-1]);
-				if(c1<c) ymin=(c1+c)>>1;
-				if(c1>c) ymax=(c1+c)>>1;
-			}
-			else {
-				ymin=c;
-				ymax=c;
-			}
-			
-			//next
-			if(m<(ALL_N-1)) {
-				c1=todisplay(capture[m+1]);
-				if(c1<c) ymin=min(ymin,(c+c1)>>1);
-				if(c1>c) ymax=max(ymax,(c1+c)>>1);
+			if(draw_type==DRAW_LINES) {
+				//prev
+				if(m) {
+					c1=todisplay(capture[m-1]);
+					if(c1<c) ymin=(c1+c)>>1;
+					if(c1>c) ymax=(c1+c)>>1;
+				}
+				else {
+					ymin=c;
+					ymax=c;
+				}
+				
+				//next
+				if(m<(ALL_N-1)) {
+					c1=todisplay(capture[m+1]);
+					if(c1<c) ymin=min(ymin,(c+c1)>>1);
+					if(c1>c) ymax=max(ymax,(c1+c)>>1);
+				}
 			}
 			u=m;
 		}
@@ -86,7 +88,12 @@ void draw_signal() {
 		else {
 			for(s=4;s<8;s++) lcd_block(u,s,0);
 		}
-		lcd_constx_line(u,ymin,ymax);
+		if(draw_type==DRAW_LINES) {
+			lcd_constx_line(u,ymin,ymax);
+		}
+		else if(draw_type==DRAW_DOTS) {
+			lcd_pixel(u,c);
+		}
 	}
 }
 
@@ -112,7 +119,8 @@ inline void dfreq_only(uint8_t x,uint8_t y) {
 
 inline void fft_maxfreq() {
 	lcd_str("8px=",(DISPLAY_X/2)-1,0);
-	lcd_num_from_right(DISPLAY_X-1,0,(F_CPU/(adc_period*(1<<spectrum_x_zoom)))>>4);
+	lcd_num_from_right(DISPLAY_X-1,0,
+	 (F_CPU/(adc_period*(1<<spectrum_x_zoom)))>>4);
 	lcd_str("hz",DISPLAY_X-13,1);
 }
 inline void dfreq() {

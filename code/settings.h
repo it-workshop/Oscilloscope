@@ -4,6 +4,8 @@
 //settings
 #define ALL_N 128
 
+#define V_MAX 65536/2-1
+
 #define LCD_SKIP_MIN 1
 #define LCD_SKIP_MAX 4096
 #define LCD_SKIP_STEP 1
@@ -14,10 +16,13 @@
 
 #define ADC_STEP 10
 
-#define ADC_ERROR_STEP ALL_N/4
-#define ADC_ERROR_MAX 65535
+#define ADC_ERROR_MAX 32767
+#define ADC_ERROR_STEP 326
 
-#define ADC_RESET_DEFAULT (5*ALL_N)
+#define ADC_RESET_DEFAULT (3*ALL_N)
+#define ADC_RESET_STEP ALL_N
+#define ADC_RESET_MIN ADC_RESET_STEP
+#define ADC_RESET_INF 10*ALL_N
 
 #define SPECTRUM_ZOOM_MIN 0
 #define SPECTRUM_ZOOM_MAX_Y 6
@@ -41,32 +46,20 @@
 
 #define MODE_MAX 4
 
-#define top_state() (PINA&(1<<2))
-#define right_state() (PINA&(1<<3))
-#define left_state() (PINA&(1<<4))
-#define up_state() (PINA&(1<<6))
-#define down_state() (PINA&(1<<7))
-#define pause_state() (PINA&(1<<5))
-
-#define top_pressed() (!top_state()&&top_state1)
-#define right_pressed() (!right_state()&&right_state1)
-#define left_pressed() (!left_state()&&left_state1)
-#define up_pressed() (!up_state()&&up_state1)
-#define down_pressed() (!down_state()&&down_state1)
-
 #define increment(a,min,max) a=(a==max)?min:a+1
 #define decrement(a,min,max) a=(a==min)?max:a-1
 
 #define min(x,y) (x<y?x:y)
 #define max(x,y) (x>y?x:y)
 #define abs(x) (x<0?-x:x)
+#define absdiff(x,y) (x>y?(x-y):(y-x))
 
 #define incr_step(a,min,max,step) a=((a>(max-step))?min:a+step)
 #define decr_step(a,min,max,step) a=((a<(min+step))?max:a-step)
 
 #define adc_request() ADCSRA|=1<<6
 #define adc_timer_play() TIMSK1|=(1<<OCIE1B);TCCR1B=0b001
-#define adc_timer_pause() TIMSK1&=~(1<<OCIE1B);TCCR1B=0
+#define adc_timer_pause() TIMSK1&=~(1<<OCIE1B);TCCR1B=0;current=0
 #define buttons_timer_play() TIMSK0|=(1<<TOIE0);TCCR0B=0b101
 #define buttons_timer_pause() TIMSK0&=~(1<<TOIE0);TCCR0B=0
 

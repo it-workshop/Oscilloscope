@@ -7,6 +7,8 @@
 #include "menu.h"
 #include "settings.h"
 
+extern uint16_t capture[ALL_N];
+
 extern uint8_t current,
 	mode,
 	top_state1,
@@ -14,7 +16,7 @@ extern uint8_t current,
 	right_state1,
 	up_state1,
 	down_state1,
-	pause_state1,
+	running1,
 	redraw_menu,
 	array_filled,
 	error_storage,
@@ -30,39 +32,41 @@ extern uint16_t adc_error,
 	lcd_skip;
 
 void buttons_process() {
-	running=pause_state();
+	running=isrunning();
 	
-	if(!pause_state1&&running) {
+	if(!running1&&running) {
 		adc_timer_play();
 	}
-	if(pause_state1&&!running) {
+	if(running1&&!running) {
 		adc_timer_pause();
 	}
 	
 	if(menu_state==MENU_NONE) {
 		if(right_pressed()) {
-			decr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,(adc_period>>ADC_PERIOD_SCALE));
+			decr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,
+			 (adc_period>>ADC_PERIOD_SCALE));
 			osd();
 			osd_delay();
-			mode_update();
+			//mode_update();
 		}
 		else if(left_pressed()) {
-			incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,(adc_period>>ADC_PERIOD_SCALE));
+			incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,
+			 (adc_period>>ADC_PERIOD_SCALE));
 			osd();
 			osd_delay();
-			mode_update();
+			//mode_update();
 		}
 		else if(up_pressed()) {
 			decrement(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX);
 			osd();
 			osd_delay();
-			mode_update();
+			//mode_update();
 		}
 		else if(down_pressed()) {
 			increment(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX);
 			osd();
 			osd_delay();
-			mode_update();
+			//mode_update();
 		}
 		else if(top_pressed()) {
 			menu_state=MENU_EXIT;
@@ -85,15 +89,35 @@ void buttons_process() {
 	}
 	else {
 		if(up_pressed()) {
-			increment(menu_state,menu_topstate()+1,menu_second_max());
+			if(menu_state!=MENU_TRIGGER_VALUES_EDIT) {
+				increment(menu_state,menu_topstate()+1,menu_second_max());
+			}
+			else {
+				incr_step(capture[current],0,V_MAX,655);
+				redraw_menu=1;
+			}
 			redraw_menu=1;
 		}
 		else if(down_pressed()) {
-			decrement(menu_state,menu_topstate()+1,menu_second_max());
+			if(menu_state!=MENU_TRIGGER_VALUES_EDIT) {
+				decrement(menu_state,menu_topstate()+1,menu_second_max());
+			}
+			else {
+				decr_step(capture[current],0,V_MAX,655);
+				redraw_menu=1;
+			}
 			redraw_menu=1;
 		}
 		else if(top_pressed()) {
-			menu_state=menu_topstate();
+			if(menu_state==MENU_TRIGGER_VALUES_EDIT) {
+				menu_state=MENU_TRIGGER_VALUES;
+				current=0;
+				array_filled=1;
+				adc_timer_play();
+			}
+			else {
+				menu_state=menu_topstate();
+			}
 			redraw_menu=1;
 		}
 		
@@ -125,11 +149,13 @@ void buttons_process() {
 		
 		else if(menu_state==MENU_ADC_FREQ) {
 			if(right_pressed()) {
-				incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,(adc_period>>ADC_PERIOD_SCALE));
+				decr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,
+				 (adc_period>>ADC_PERIOD_SCALE));
 				redraw_menu=1;
 			}
 			else if(left_pressed()) {
-				incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,(adc_period>>ADC_PERIOD_SCALE));
+				incr_step(adc_period,ADC_PERIOD_MIN,ADC_PERIOD_MAX,
+				 (adc_period>>ADC_PERIOD_SCALE));
 				redraw_menu=1;
 			}
 		}
@@ -163,11 +189,30 @@ void buttons_process() {
 		}
 		else if(menu_state==MENU_TRIGGER_RESET) {
 			if(right_pressed()) {
-				incr_step(adc_reset,1,ADC_ERROR_MAX,ALL_N);
+				incr_step(adc_reset,ADC_RESET_MIN,ADC_RESET_INF,ADC_RESET_STEP);
 				redraw_menu=1;
 			}
 			else if(left_pressed()) {
-				decr_step(adc_reset,1,ADC_ERROR_MAX,ALL_N);
+				decr_step(adc_reset,ADC_RESET_MIN,ADC_RESET_INF,ADC_RESET_STEP);
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==MENU_TRIGGER_VALUES) {
+			if(right_pressed()) {
+				menu_state=MENU_TRIGGER_VALUES_EDIT;
+				adc_reset=ADC_RESET_INF;
+				adc_timer_pause();
+				current=0;
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==MENU_TRIGGER_VALUES_EDIT) {
+			if(right_pressed()) {
+				increment(current,0,ALL_N-1);
+				redraw_menu=1;
+			}
+			if(left_pressed()) {
+				decrement(current,0,ALL_N-1);
 				redraw_menu=1;
 			}
 		}
@@ -184,11 +229,13 @@ void buttons_process() {
 		}
 		else if(menu_state==MENU_VIEW_SPECTRUMYZOOM) {
 			if(right_pressed()) {
-				increment(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_Y);
+				increment(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,
+				 SPECTRUM_ZOOM_MAX_Y);
 				redraw_menu=1;
 			}
 			if(left_pressed()) {
-				decrement(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,SPECTRUM_ZOOM_MAX_Y);
+				decrement(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,
+				 SPECTRUM_ZOOM_MAX_Y);
 				redraw_menu=1;
 			}
 		}
@@ -196,7 +243,9 @@ void buttons_process() {
 	buttons_update();
 }
 
-
+inline uint8_t isrunning() {
+	return((pause_state())&&(menu_state!=MENU_TRIGGER_VALUES_EDIT));
+}
 
 inline void buttons_update() {
 	right_state1=right_state();
@@ -204,5 +253,5 @@ inline void buttons_update() {
 	top_state1=top_state();
 	up_state1=up_state();
 	down_state1=down_state();
-	pause_state1=pause_state();
+	running1=isrunning();
 }

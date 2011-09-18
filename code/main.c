@@ -23,12 +23,14 @@ uint8_t menu_state=MENU_NONE; //see menu.h
 //state variables
 uint8_t current=0,
 	mode=MODE_DUAL,
+	
 	top_state1=0,
 	left_state1=0,
 	right_state1=0,
 	up_state1=0,
 	down_state1=0,
-	pause_state1=0,
+	running1=0,
+	
 	redraw_menu=0,
 	array_filled=0,
 	error_storage=0,
@@ -49,6 +51,7 @@ uint16_t adc_reset_c=0,lcd_skip_c=1;
 //temp
 uint16_t ymin,ymax,c,c1;
 
+
 ISR(TIMER1_COMPB_vect) {
 	TCNT1=0;
 	adc_request();
@@ -60,17 +63,20 @@ ISR(TIMER0_OVF_vect) {
 
 ISR(ADC_vect) {
 	if(((running||mode==MODE_UART_BUF)&&(current<ALL_N))) {
-		if(mode==MODE_SIGNAL||mode==MODE_SPECTRUM||mode==MODE_DUAL||mode==MODE_UART_BUF) {
-			if(adc_reset_c>=adc_reset) {
+		if(mode==MODE_SIGNAL||mode==MODE_SPECTRUM||mode==MODE_DUAL
+		 ||mode==MODE_UART_BUF) {
+			if(adc_reset_c>=adc_reset&&adc_reset<ADC_RESET_INF) {
 				adc_reset_c=0;
 				array_filled=0;
 				current=0;
 				return;
 			}
-			if(array_filled&&(abs(ADC-capture[current])>adc_error)&&current<adc_check) {
-				adc_reset_c++;
-				current=0;
-				return;
+			if(array_filled&&current<adc_check) {
+				if(absdiff((ADC>>1),capture[current])>adc_error) {
+					adc_reset_c++;
+					current=0;
+					return;
+				}
 			}
 		}
 		capture[current]=ADC>>1;
@@ -131,11 +137,12 @@ int main() {
 				if(mode==MODE_SPECTRUM||mode==MODE_SIGNAL||mode==MODE_DUAL) {
 					if(lcd_skip_c>=lcd_skip) {
 						lcd_skip_c=1;
-						if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)) {
+						if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)
+						 &&menu_state!=MENU_TRIGGER_VALUES_EDIT) {
 							fft_input((int16_t*)capture, bfly_buff);
 							fft_execute(bfly_buff);
 							fft_output(bfly_buff, output);
-							for (m=0;m<ALL_N/2;m++) {
+							for(m=0;m<ALL_N/2;m++) {
 								s=output[m]>>(9-spectrum_y_zoom);
 								if(s>DISPLAY_Y-1) s=DISPLAY_Y-1;
 								if(s<0) s=0;
@@ -152,12 +159,16 @@ int main() {
 							}
 						}
 						if((mode==MODE_SIGNAL)||(mode==MODE_DUAL)) {
-							draw_signal();
+							draw_signal((mode==MODE_DUAL
+							 &&menu_state!=MENU_TRIGGER_VALUES_EDIT)
+							 ?DRAW_SIGNAL_DUAL:DRAW_SIGNAL,
+							  menu_state==MENU_TRIGGER_VALUES_EDIT?
+							 DRAW_DOTS:DRAW_LINES);
 						}
 					}
 					else lcd_skip_c++;
 				}
-				else if(mode==MODE_XY) {
+				else if(mode==MODE_XY&&menu_state!=MENU_TRIGGER_VALUES_EDIT) {
 					if(lcd_skip_c>=lcd_skip) {
 						lcd_skip_c=1;
 						for(s=(DISPLAY_X/2);s<DISPLAY_X;s++) {
@@ -167,7 +178,8 @@ int main() {
 					else lcd_skip_c++;
 					
 					for(s=0;s<DISPLAY_X;s+=2) {
-						lcd_pixel_share(ALL_N/2+(capture[s]>>9),63-(capture[s+1]>>9));
+						lcd_pixel_share(ALL_N/2+(capture[s]>>9),
+						 63-(capture[s+1]>>9));
 					}
 				}
 				else if(mode==MODE_UART_BUF) {
@@ -175,7 +187,7 @@ int main() {
 						_delay_ms(1);
 					}
 				}
-				current=0;
+				if(running) current=0;
 				if(!running&&!menu_state) osd();
 			}
 		}

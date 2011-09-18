@@ -201,7 +201,7 @@ void MainWindow::read_file() {
     //ifstream file(filename.c_str());
     FILE* file=fopen(filename.c_str(),"r");
     unsigned int i,si;
-    value_t buf;
+    //value_t buf;
     for(i=0;i<VAL;i++) {
         for(si=0;si<SYM;si++) {
             //file>>buf;
@@ -217,7 +217,7 @@ void MainWindow::write_file() {
     //ofstream file(filename.c_str());
     FILE* file=fopen(filename.c_str(),"w");
     unsigned int i,si;
-    value_t buf;
+    //value_t buf;
     for(i=0;i<VAL;i++) {
         for(si=0;si<SYM;si++) {
             //buf=;
@@ -244,7 +244,7 @@ void MainWindow::on_spinBox_valueChanged(int x) {
 void MainWindow::on_lineEdit_editingFinished() {
     write_memory();
 
-    if(ui->lineEdit->text().toAscii().data()[0]<128) {
+    if(ui->lineEdit->text().toAscii().data()[0]) {
         ui->spinBox->setValue(ui->lineEdit->text().toAscii().data()[0]);
         reset_table();
         current=ui->spinBox->value();
@@ -257,12 +257,4 @@ void MainWindow::on_lineEdit_editingFinished() {
 
 void MainWindow::on_pushButton_3_clicked() {
     read_file();
-}
-
-void MainWindow::on_pushButton_5_clicked() {
-    write_memory();
-}
-
-void MainWindow::on_pushButton_4_clicked() {
-    read_memory();
 }

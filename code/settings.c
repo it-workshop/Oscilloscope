@@ -60,7 +60,7 @@ void mode_update() {
 			}
 			adc_freq_normal();
 		}
-		array_filled=0;
+		//array_filled=0;
 		running=1;
 		ADCSRA|=(1<<ADIE);
 		if(mode!=MODE_UART_BUF) {

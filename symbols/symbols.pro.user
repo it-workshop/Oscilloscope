@@ -76,15 +76,15 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-8IKdkbhhXP,guid=3f17f9348a76ee5eba7901eb0000002b</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-HsrlfMvqXJ,guid=034f76b09f8cc6034197fb6c00000027</value>
     <value type="QString">DESKTOP_SESSION=default</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">GDMSESSION=default</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_GB.utf8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-gJoRX6</value>
-    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-rWopC9/S.gpg-agent:3027:1</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-k4cuai</value>
+    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-4zCmfa/S.gpg-agent:2927:1</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/seriy/.gtkrc-1.2-gnome2</value>
     <value type="QString">HOME=/home/seriy</value>
@@ -96,19 +96,19 @@
     <value type="QString">PATH=/home/QtSDK/Desktop/Qt/4.8.0/gcc/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
     <value type="QString">PWD=/home/seriy</value>
     <value type="QString">QTDIR=/home/QtSDK/Desktop/Qt/4.8.0/gcc/</value>
-    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2979,unix/seriy-desktop:/tmp/.ICE-unix/2979</value>
+    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2879,unix/seriy-desktop:/tmp/.ICE-unix/2879</value>
     <value type="QString">SHELL=/bin/bash</value>
-    <value type="QString">SSH_AGENT_PID=3013</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-gJoRX6/ssh</value>
+    <value type="QString">SSH_AGENT_PID=2913</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-k4cuai/ssh</value>
     <value type="QString">USER=seriy</value>
     <value type="QString">USERNAME=seriy</value>
     <value type="QString">WINDOWPATH=7</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-OmkgnV/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-1SfGrK/database</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/share/gdm/:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1315749332.578612-1239694635</value>
+    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1316326782.175396-1430186902</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
-    <value type="QString">/home/seriy/svn/osc/symbols/symbols.pro</value>
+    <value type="QString">/home/seriy/Documents/svn/osc/symbols/symbols.pro</value>
     <value type="QString">-spec</value>
     <value type="QString">linux-g++</value>
     <value type="QString">-r</value>
@@ -116,7 +116,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString">/home/QtSDK/Desktop/Qt/4.8.0/gcc/bin/qmake</value>
    <value key="abstractProcess.enabled" type="bool">false</value>
-   <value key="abstractProcess.workingDirectory" type="QString">/home/seriy/svn/osc/symbols</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/seriy/Documents/svn/osc/symbols</value>
   </valuemap>
  </data>
  <data>
@@ -124,15 +124,15 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-8IKdkbhhXP,guid=3f17f9348a76ee5eba7901eb0000002b</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-HsrlfMvqXJ,guid=034f76b09f8cc6034197fb6c00000027</value>
     <value type="QString">DESKTOP_SESSION=default</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">GDMSESSION=default</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_GB.utf8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-gJoRX6</value>
-    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-rWopC9/S.gpg-agent:3027:1</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-k4cuai</value>
+    <value type="QString">GPG_AGENT_INFO=/tmp/seahorse-4zCmfa/S.gpg-agent:2927:1</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/seriy/.gtkrc-1.2-gnome2</value>
     <value type="QString">HOME=/home/seriy</value>
@@ -144,16 +144,16 @@
     <value type="QString">PATH=/home/QtSDK/Desktop/Qt/4.8.0/gcc/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
     <value type="QString">PWD=/home/seriy</value>
     <value type="QString">QTDIR=/home/QtSDK/Desktop/Qt/4.8.0/gcc/</value>
-    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2979,unix/seriy-desktop:/tmp/.ICE-unix/2979</value>
+    <value type="QString">SESSION_MANAGER=local/seriy-desktop:@/tmp/.ICE-unix/2879,unix/seriy-desktop:/tmp/.ICE-unix/2879</value>
     <value type="QString">SHELL=/bin/bash</value>
-    <value type="QString">SSH_AGENT_PID=3013</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-gJoRX6/ssh</value>
+    <value type="QString">SSH_AGENT_PID=2913</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-k4cuai/ssh</value>
     <value type="QString">USER=seriy</value>
     <value type="QString">USERNAME=seriy</value>
     <value type="QString">WINDOWPATH=7</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-OmkgnV/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm3/auth-for-seriy-1SfGrK/database</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/share/gdm/:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1315749332.578612-1239694635</value>
+    <value type="QString">XDG_SESSION_COOKIE=751bb31707d0cc4dc498d77b00000718-1316326782.175396-1430186902</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -161,7 +161,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString">/usr/bin/make</value>
    <value key="abstractProcess.enabled" type="bool">true</value>
-   <value key="abstractProcess.workingDirectory" type="QString">/home/seriy/svn/osc/symbols</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/seriy/Documents/svn/osc/symbols</value>
   </valuemap>
  </data>
  <data>
