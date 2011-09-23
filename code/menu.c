@@ -18,6 +18,7 @@ extern uint8_t current,
 	array_filled,
 	error_storage,
 	spectrum_x_zoom,
+	signal_type,
 	spectrum_y_zoom,
 	running,
 	menu_state,
@@ -150,5 +151,14 @@ void draw_menu() {
 			lcd_str("sp. zoom",topstate1_x,1);
 			lcd_num_from_right((DISPLAY_X/2-1),2,1<<spectrum_y_zoom);
 		}
+                else if(menu_state==MENU_VIEW_SIGNALTYPE) {
+                        lcd_str("sign. type",topstate1_x,1);
+			if(signal_type==DRAW_LINES) {
+				lcd_str("lines",state_x,2);
+			}
+			else if(signal_type==DRAW_DOTS) {
+				lcd_str("dots",state_x,2);
+			}
+                }
 	}
 }

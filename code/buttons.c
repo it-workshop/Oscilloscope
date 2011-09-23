@@ -24,6 +24,7 @@ extern uint8_t current,
 	spectrum_y_zoom,
 	running,
 	input,
+	signal_type,
 	m,u,s;
 extern int8_t menu_state;
 extern uint16_t adc_error,
@@ -236,6 +237,16 @@ void buttons_process() {
 			if(left_pressed()) {
 				decrement(spectrum_y_zoom,SPECTRUM_ZOOM_MIN,
 				 SPECTRUM_ZOOM_MAX_Y);
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==MENU_VIEW_SIGNALTYPE) {
+			if(right_pressed()) {
+				increment(signal_type,DRAW_MIN,DRAW_MAX);
+				redraw_menu=1;
+			}
+			if(left_pressed()) {
+				decrement(signal_type,DRAW_MIN,DRAW_MAX);
 				redraw_menu=1;
 			}
 		}

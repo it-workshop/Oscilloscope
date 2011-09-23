@@ -37,6 +37,9 @@ uint8_t current=0,
 	spectrum_x_zoom=0,
 	spectrum_y_zoom=0,
 	running=1,
+
+	signal_type=DRAW_DOTS,
+
 	input=0;
 uint16_t adc_error=1,
 	adc_check=2,
@@ -137,7 +140,7 @@ int main() {
 				if(mode==MODE_SPECTRUM||mode==MODE_SIGNAL||mode==MODE_DUAL) {
 					if(lcd_skip_c>=lcd_skip) {
 						lcd_skip_c=1;
-						if((mode==MODE_SPECTRUM)||(mode==MODE_DUAL)
+						if(((mode==MODE_SPECTRUM)||(mode==MODE_DUAL))
 						 &&menu_state!=MENU_TRIGGER_VALUES_EDIT) {
 							fft_input((int16_t*)capture, bfly_buff);
 							fft_execute(bfly_buff);
@@ -163,7 +166,7 @@ int main() {
 							 &&menu_state!=MENU_TRIGGER_VALUES_EDIT)
 							 ?DRAW_SIGNAL_DUAL:DRAW_SIGNAL,
 							  menu_state==MENU_TRIGGER_VALUES_EDIT?
-							 DRAW_DOTS:DRAW_LINES);
+							 DRAW_DOTS:signal_type);
 						}
 					}
 					else lcd_skip_c++;

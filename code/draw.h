@@ -6,6 +6,8 @@
 
 #define DRAW_LINES 1
 #define DRAW_DOTS 2
+#define DRAW_MIN DRAW_LINES
+#define DRAW_MAX DRAW_DOTS
 
 
 void draw_signal(uint8_t draw_what,uint8_t draw_type);
