@@ -117,15 +117,16 @@ void welcome() {
 
 inline void dfreq_only(uint8_t x,uint8_t y) {
 	lcd_num_from_right(x,y,F_CPU/adc_period);
+	//lcd_num_from_right(x,y,OCR1B);
 }
 
 inline void fft_maxfreq() {
-	lcd_str("8px=",(DISPLAY_X/2)-1,0);
-	lcd_num_from_right(DISPLAY_X-1,0,
+	lcd_str("8px=",DISPLAY_X/2,0);
+	lcd_num_from_right(DISPLAY_X-2*FONT_SIZE-3,0,
 	 (F_CPU/(adc_period*(1<<spectrum_x_zoom)))>>4);
-	lcd_str("hz",DISPLAY_X-13,1);
+	lcd_str("hz",DISPLAY_X-2*FONT_SIZE-3,0);
 }
 inline void dfreq() {
-	lcd_str("dfreq=",0,0);
-	dfreq_only((DISPLAY_X/2)-1,1);
+	lcd_str("dfq=",DISPLAY_X/2,1);
+	dfreq_only(DISPLAY_X,1);
 }

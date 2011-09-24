@@ -71,6 +71,7 @@ void buttons_process() {
 		}
 		else if(top_pressed()) {
 			menu_state=MENU_EXIT;
+			lcd_all(0);
 			redraw_menu=1;
 		}
 	}
@@ -81,6 +82,7 @@ void buttons_process() {
 			if(menu_state==MENU_EXIT) {
 				menu_state=MENU_NONE;
 				top_state1=0;
+				redraw_menu=1;
 			}
 			else {
 				menu_state|=1;

@@ -41,11 +41,11 @@ uint8_t current=0,
 	signal_type=DRAW_LINES,
 
 	input=0;
-uint16_t adc_error=1,
-	adc_check=2,
+uint16_t adc_error=ADC_ERROR_STEP,
+	adc_check=5,
 	adc_reset=ADC_RESET_DEFAULT,
 	lcd_skip=1;
-
+uint8_t menu_closed=0,clear_screen=0;
 //counters
 uint8_t m=1,s,u;
 uint16_t adc_reset_c=0,lcd_skip_c=1;
@@ -65,7 +65,7 @@ ISR(TIMER0_OVF_vect) {
 }
 
 ISR(ADC_vect) {
-	if(((running||mode==MODE_UART_BUF)&&(current<ALL_N))) {
+	if(current<ALL_N||mode==MODE_UART) {
 		if(mode==MODE_SIGNAL||mode==MODE_SPECTRUM||mode==MODE_DUAL
 		 ||mode==MODE_UART_BUF) {
 			if(adc_reset_c>=adc_reset&&adc_reset<ADC_RESET_INF) {
@@ -92,6 +92,9 @@ ISR(ADC_vect) {
 		}
 		current++;
 	}
+	else if(current>=ALL_N) {
+		//adc_timer_pause();
+	}
 }
 
 int main() {
@@ -111,12 +114,12 @@ int main() {
 	adc_freq_normal();
 	
 	//button & adc interrupt init
-	TCCR0B=0b101;
+	TCCR1A=0;
 	TCNT0=0x00;
-	TCNT1=0x00;
+	TCNT1=0x0000;
 	adc_period=ADC_PERIOD_MIN;
 
-	_delay_ms(1000);
+	_delay_ms(500);
 	lcd_all(0);
 	mode_update();
 	sei();
@@ -126,16 +129,17 @@ int main() {
 			while(!(ADCSRA&(1<<ADIF))) {
 				asm("nop");
 			}
-			capture[0]=ADC;
+			capture[0]=ADC>>1;
 		}
 		else {
-			if(redraw_menu) {
-				lcd_all(0);
-				if(running) redraw_menu=0;
-				draw_menu();
-			}
-			if((current>=(ALL_N-1))||((!running)&&redraw_menu)) {
-				if(!running) redraw_menu=0;
+			if((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed))) {
+				if(clear_screen) {
+					lcd_all(0);
+					clear_screen=0;
+					redraw_menu=1;
+				}
+				menu_closed=0;
+				//adc_timer_pause();
 				if(!array_filled) array_filled=1;
 				adc_reset_c=0;
 				if(mode==MODE_SPECTRUM||mode==MODE_SIGNAL||mode==MODE_DUAL) {
@@ -191,10 +195,26 @@ int main() {
 						_delay_ms(1);
 					}
 				}
-				if(running) current=0;
-				if(!running&&!menu_state) osd();
+				if(running) {
+					current=0;
+					adc_timer_play();
+				}
+				if(!running) osd();
+			}
+			if(redraw_menu) {
+				if(menu_state!=MENU_NONE) {
+					for(m=0;m<64;m++) {
+						for(u=0;u<4;u++) {
+							lcd_block(m,u,0);
+						}
+					}
+				}
+				else {
+					menu_closed=1;
+				}
+				redraw_menu=0;
+				draw_menu();
 			}
 		}
-		_delay_ms(1);
 	}
 }

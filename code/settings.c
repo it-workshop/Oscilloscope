@@ -20,6 +20,7 @@ extern uint8_t current,
 	pause_state1,
 	redraw_menu,
 	adc_step,
+	clear_screen,
 	array_filled,
 	error_storage,
 	spectrum_x_zoom,
@@ -40,8 +41,9 @@ void mode_update() {
 		buttons_timer_pause();
 	}
 	else {
+		buttons_timer_play();
 		redraw_menu=1;
-		lcd_all(0);
+		clear_screen=1;
 	}
 	if(mode==MODE_UART) {
 		adc_timer_pause();
@@ -60,16 +62,16 @@ void mode_update() {
 			}
 			adc_freq_normal();
 		}
-		//array_filled=0;
 		running=1;
 		ADCSRA|=(1<<ADIE);
 		if(mode!=MODE_UART_BUF) {
 			buttons_timer_play();
 		}
-		adc_timer_play();
+		if(running) {
+			adc_timer_play();
+		}
 	}
 	current=0;
-	//sei();
 }
 
 inline void return_control() {
