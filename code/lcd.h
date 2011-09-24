@@ -37,7 +37,7 @@ void lcd_all(uint8_t w);
 void lcd_init();
 void lcd_sym(uint8_t sym,uint8_t x,uint8_t y);
 void lcd_str(char* s,uint8_t x,uint8_t y);
-uint8_t lcd_read(uint8_t x,uint8_t y);
+uint8_t lcd_read();
 inline void lcd_pixel(uint8_t x,uint8_t y);
 void lcd_pixel_share(uint8_t x,uint8_t y);
 void lcd_line_from_bottom(uint8_t x1,uint8_t y1);

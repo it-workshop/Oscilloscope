@@ -44,6 +44,7 @@ uint8_t menu_second_max() {
 	if(menu_topstate()==MENU_VIEW) return(MENU_VIEW_MAX);
 	if(menu_topstate()==MENU_ADC) return(MENU_ADC_MAX);
 	if(menu_topstate()==MENU_TRIGGER) return(MENU_TRIGGER_MAX);
+	return(0);
 }
 
 void draw_menu() {

@@ -4,7 +4,7 @@
 //settings
 #define ALL_N 128
 
-#define V_MAX 65536/2-1
+#define V_MAX (65536/2-1)
 
 #define LCD_SKIP_MIN 1
 #define LCD_SKIP_MAX 4096
@@ -22,7 +22,7 @@
 #define ADC_RESET_DEFAULT (3*ALL_N)
 #define ADC_RESET_STEP ALL_N
 #define ADC_RESET_MIN ADC_RESET_STEP
-#define ADC_RESET_INF 10*ALL_N
+#define ADC_RESET_INF (10*ALL_N)
 
 #define SPECTRUM_ZOOM_MIN 0
 #define SPECTRUM_ZOOM_MAX_Y 6

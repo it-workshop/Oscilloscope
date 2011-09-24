@@ -1,4 +1,5 @@
 #include <avr/eeprom.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 #include "lcd.h"
 
@@ -6,8 +7,10 @@
 //lcd's setup pins PORT
 #define CMDPORT PORTD
 #define CMDDDR DDRD
+
 #define DATAPORT PORTC
 #define DATADDR DDRC
+#define DATAPIN PINC
 
 #define CSEL1 (1<<2)
 #define CSEL2 (1<<3)
@@ -112,21 +115,34 @@ void lcd_str(char* s,uint8_t x,uint8_t y) {
 	}
 }
 
-uint8_t lcd_read(uint8_t x,uint8_t y) {
-	lcd_goto(x,y);
-	CMDPORT|=DI|RW;
-	_delay_us(6);
-	CMDPORT&=~(DI|RW);
-	return(DATAPORT);
+uint8_t lcd_read() {
+	uint8_t res;
+	cli();
+	CMDPORT|=DI|RW|RS;
+	DATAPORT=0;
+	DATADDR=0x00;
 	
+	CMDPORT|=EN;
+	_delay_us(6);
+	res=DATAPIN;
+	
+	CMDPORT&=~EN;
+	
+	CMDPORT&=~(DI|RW);
+	DATADDR=0xff;
+	
+	sei();
+	return(res);
 }
 
 inline void lcd_pixel(uint8_t x,uint8_t y) {
-		lcd_block(x,(y-y%8)/8,1<<(y%8));
+	lcd_block(x,(y-y%8)/8,1<<(y%8));
 }
 
 void lcd_pixel_share(uint8_t x,uint8_t y) {
-	lcd_block(x,(y-y%8)/8,(1<<(y%8))|lcd_read(x,(y-y%8)/8));
+	lcd_goto(x,y/8);
+	lcd_read();
+	lcd_block(x,y/8,lcd_read()|(1<<(y%8)));
 }
 
 void lcd_line_from_bottom(uint8_t x1,uint8_t y1) {
@@ -178,6 +194,11 @@ inline uint8_t lcd_yblockof(uint8_t y) {
 }
 void lcd_constx_line(uint8_t x,uint8_t ymin,uint8_t ymax) {
 	static uint8_t buf;
+	if(ymin>ymax) {
+		buf=ymax;
+		ymax=ymin;
+		ymin=buf;
+	}
 	buf=0;
 	while(ymin<=ymax) {
 		buf|=1<<(ymin%8);

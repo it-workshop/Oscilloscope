@@ -38,7 +38,7 @@ uint8_t current=0,
 	spectrum_y_zoom=0,
 	running=1,
 
-	signal_type=DRAW_DOTS,
+	signal_type=DRAW_LINES,
 
 	input=0;
 uint16_t adc_error=1,
@@ -99,7 +99,8 @@ int main() {
 	uart_init();
 	welcome();
 
-	SPCR=(1<<6)|0b11|(1<<4);
+	//spi
+	//SPCR=(1<<6)|0b11|(1<<4);
 
 	// pins init
 	DDRA=0x00;

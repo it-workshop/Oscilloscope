@@ -37,6 +37,8 @@ inline uint8_t todisplay(uint16_t a) {
 void draw_signal(uint8_t draw_what,uint8_t draw_type) {
 	for(m=0;m<ALL_N;m++) {
 		c=todisplay(capture[m]);
+		ymin=c;
+		ymax=c;
 		if(draw_what==DRAW_SIGNAL_DUAL) {
 			if(draw_type==DRAW_LINES) {
 				//prev
