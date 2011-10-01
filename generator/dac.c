@@ -4,15 +4,13 @@
 
 void dac_send(uint16_t data) {
 	uint8_t x=12;
-	uint8_t t;
 	DAC_CMDPORT|=DAC_LD|DAC_CLR;
 	dac_delay();
 	DAC_CMDPORT&=~DAC_CS;
 	do {
 		x--;
-		t=(data&(1<<x))!=0;
 		DAC_CMDPORT&=~DAC_CLK;
-		if(t) {
+		if(data&(1<<x)) {
 			DAC_CMDPORT|=DAC_SDI;
 		}
 		else {

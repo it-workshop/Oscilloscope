@@ -32,11 +32,17 @@ extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
 	lcd_skip;
+	
+extern uint8_t m,s,u;
+
+
+//temp
+extern uint16_t ymin,ymax,c,c1;
 
 void mode_update() {
-	//cli();
 	if((mode==MODE_UART_BUF)||(mode==MODE_UART)) {
-		adc_check=0;
+		uart_init();
+		//adc_check=0;
 		redraw_menu=0;
 		buttons_timer_pause();
 	}
@@ -46,7 +52,7 @@ void mode_update() {
 		clear_screen=1;
 	}
 	if(mode==MODE_XY) {
-			adc_freq_fast();
+		adc_freq_fast();
 	}
 	else {
 		if(input==0) {
@@ -78,9 +84,16 @@ void mode_update() {
 	current=0;
 }
 
-inline void return_control() {
+void return_control() {
+	//uart_close();
 	mode=MODE_DUAL;
 	menu_state=MENU_NONE;
+	m=0;
+	u=0;
+	c=0;
+	array_filled=0;
+	running=1;
 	lcd_all(0);
+	adc_period=ADC_PERIOD_MIN;
 	mode_update();
 }

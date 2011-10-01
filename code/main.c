@@ -98,7 +98,6 @@ ISR(ADC_vect) {
 
 int main() {
 	lcd_init();
-	uart_init();
 	welcome();
 
 	//spi
@@ -154,8 +153,14 @@ int main() {
 			lcd_str("v",DISPLAY_X-(FONT_SIZE+2),0);
 			_delay_ms(50);
 		}
+		else if(mode==MODE_UART_BUF) {
+			//for(;;) {
+				//if(mode==MODE_DUAL) break;
+				_delay_ms(1);
+			//}
+		}
 		else {
-			if((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed))) {
+			if((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed))&&mode!=MODE_UART_BUF) {
 				if(clear_screen) {
 					lcd_all(0);
 					clear_screen=0;
@@ -213,11 +218,6 @@ int main() {
 						 63-(capture[s+1]>>9));
 					}
 				}
-				else if(mode==MODE_UART_BUF) {
-					while(current) {
-						_delay_ms(1);
-					}
-				}
 				if(running) {
 					current=0;
 					trigger_enabled=(mode!=MODE_XY&&mode!=MODE_SPECTRUM);
@@ -241,4 +241,5 @@ int main() {
 			draw_menu();
 		}
 	}
+	_delay_ms(1);
 }

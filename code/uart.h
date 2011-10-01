@@ -39,5 +39,6 @@ void uart_init();
 void uart_putc(uint8_t c);
 uint8_t uart_getc();
 void uart_action(uint8_t c);
+void uart_close();
 
 #endif

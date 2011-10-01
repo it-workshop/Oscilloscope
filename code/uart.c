@@ -42,6 +42,8 @@ extern uint16_t adc_error,
 
 uint8_t uart_buf,uart_buf_empty=1;
 
+uint8_t action=UART_ACTION_DEFAULT;
+
 void uart_flush() {
 	uint8_t uart_tmp;
 	while(uart_available()) uart_tmp=UDR;
@@ -53,10 +55,17 @@ void uart_init() {
 	UCSRC = UCSRC_SELECT | (1 << UCSZ1) | (1 << UCSZ0);
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE0) | (1 << TXCIE0);
 	uart_flush();
+	action=UART_ACTION_DEFAULT;
+	uart_buf_empty=1;
 }
 
 void uart_putc(uint8_t c) {
 	UDR=c;
+}
+
+void uart_close() {
+	UCSRC=0;
+	UCSRB=0;
 }
 
 ISR(USART0_TX_vect) {
@@ -76,11 +85,13 @@ ISR(USART0_RX_vect) {
 
 
 void uart_action(uint8_t c) {
-	static uint8_t action=UART_ACTION_DEFAULT,c2=0;
+	static uint8_t c2=0;
 	static uint16_t c1;
 	if(action==UART_ACTION_DEFAULT) {
 		if(c=='c') {
 			return_control();
+			uart_buf_empty=0;
+			return;
 		}
 		else if(c=='g') {
 			if(uart_available_tx()&&uart_buf_empty) {
@@ -109,12 +120,14 @@ void uart_action(uint8_t c) {
 			mode_update();
 		}
 		else if(c=='b') {
+			current=0;
 			action=UART_ACTION_B_RC0;
 		}
 	}
 	else if(action==UART_ACTION_B_RC0) {
 		c1=c;
 		action=UART_ACTION_B_RC1;
+		current=0;
 	}
 	else if(action==UART_ACTION_B_RC1) {
 		c1|=c<<8;
@@ -122,5 +135,6 @@ void uart_action(uint8_t c) {
 		adc_period=c1;
 		action=UART_ACTION_DEFAULT;
 		mode_update();
+		current=0;
 	}
 }

@@ -33,7 +33,8 @@ private:
     Ui::desktop_osc *ui;
 
     void init_graph();
-    void to_graph(double);
+    void to_graph(double,bool replot=true);
+    void clear_graph();
 
 private slots:
     void on_pushButton_4_clicked();

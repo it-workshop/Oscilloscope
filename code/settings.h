@@ -73,6 +73,6 @@
 #define adc_second() ADMUX=0b01100001
 
 void mode_update();
-inline void return_control();
+void return_control();
 
 #endif

@@ -77,17 +77,23 @@ void desktop_osc::changeEvent(QEvent *e) {
     }
 }
 
-void desktop_osc::to_graph(double y) {
-    int i;
+void desktop_osc::to_graph(double y,bool replot) {
+    unsigned int i;
     for(i=PLOT_SIZE-1;i>0;i--)
         d_y[i]=d_y[i-1];
     d_y[0]=y;
-    ui->qwtPlot->replot();
+    if(replot) ui->qwtPlot->replot();
 }
 
+void desktop_osc::clear_graph() {
+    unsigned int i;
+    for(i=PLOT_SIZE-1;i>0;i--)
+        d_y[i]=0;
+}
 
 void desktop_osc::on_pushButton_clicked() {
     mode=MODE_UART;
+    uartobj.uwrite('n');
     msecs=ui->spinBox->value();
     answered=true;
     init_graph();
@@ -99,11 +105,13 @@ void desktop_osc::update() {
         uartobj.uwrite('g');
         uartobj.uread_error_reset();
         unsigned int r=uartobj.uread()|(uartobj.uread()<<8);
-        if(uartobj.uread_error()) {
-            timer.stop();
+        to_graph(double(r)/6553,mode==MODE_UART||current==(ALL_N-1));
+        if(current==(ALL_N-1)) {
+            current=0;
+            if(mode==MODE_UART_BUF)
+                clear_graph();
         }
-        to_graph(double(r)/13107);
-        current++;
+        else current++;
         answered=true;
     }
 }
@@ -123,7 +131,7 @@ void desktop_osc::on_pushButton_4_clicked() {
     period=ui->spinBox_2->value();
     uartobj.flush();
     uartobj.uwrite('b');
-    uartobj.uwrite(period^(0xff<<8));
+    uartobj.uwrite(period&0xff);
     uartobj.uwrite(period>>8);
     current=0;
     msecs=1;
