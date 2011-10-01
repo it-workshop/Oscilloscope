@@ -45,23 +45,27 @@ void mode_update() {
 		redraw_menu=1;
 		clear_screen=1;
 	}
-	if(mode==MODE_UART) {
-		adc_timer_pause();
-		ADCSRA&=~(1<<ADIE);
+	if(mode==MODE_XY) {
+			adc_freq_fast();
 	}
 	else {
-		if(mode==MODE_XY) {
-			adc_freq_fast();
+		if(input==0) {
+			adc_first();
 		}
-		else {
-			if(input==0) {
-				adc_first();
-			}
-			else if(input==1) {
-				adc_second();
-			}
-			adc_freq_normal();
+		else if(input==1) {
+			adc_second();
 		}
+		//adc_freq_normal();
+		adc_freq_fast();
+	}
+	if(mode==MODE_UART||mode==MODE_VOLTAGE) {
+		adc_timer_pause();
+		ADCSRA&=~(1<<ADIE);
+		if(mode==MODE_VOLTAGE) {
+			buttons_timer_play();
+		}
+	}
+	else {
 		running=1;
 		ADCSRA|=(1<<ADIE);
 		if(mode!=MODE_UART_BUF) {

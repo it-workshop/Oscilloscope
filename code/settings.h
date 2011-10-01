@@ -6,11 +6,14 @@
 
 #define V_MAX (65536/2-1)
 
+#define VOLTAGE_MAX 5
+#define VOLTAGE_ERROR 1000
+
 #define LCD_SKIP_MIN 1
 #define LCD_SKIP_MAX 4096
 #define LCD_SKIP_STEP 1
 
-#define ADC_PERIOD_MIN 500
+#define ADC_PERIOD_MIN 200
 #define ADC_PERIOD_MAX 65535
 #define ADC_PERIOD_SCALE 4
 
@@ -22,7 +25,7 @@
 #define ADC_RESET_DEFAULT (7*ALL_N)
 #define ADC_RESET_STEP ALL_N
 #define ADC_RESET_MIN ADC_RESET_STEP
-#define ADC_RESET_INF (10*ALL_N)
+#define ADC_RESET_INF (20*ALL_N)
 
 #define SPECTRUM_ZOOM_MIN 0
 #define SPECTRUM_ZOOM_MAX_Y 6
@@ -41,10 +44,11 @@
 #define MODE_SPECTRUM 2
 #define MODE_XY 3
 #define MODE_DUAL 4
-#define MODE_UART 5
-#define MODE_UART_BUF 6
+#define MODE_VOLTAGE 5
+#define MODE_UART 6
+#define MODE_UART_BUF 7
 
-#define MODE_MAX 4
+#define MODE_MAX 5
 
 #define increment(a,min,max) a=(a==max)?min:a+1
 #define decrement(a,min,max) a=(a==min)?max:a-1

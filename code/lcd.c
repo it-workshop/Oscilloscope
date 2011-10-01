@@ -54,10 +54,12 @@ void lcd_goto_xblock(uint8_t s) { //s={0,1...127}
 void lcd_goto_yblock(uint8_t s) { //s={0,1...7}
 	lcd_databits(SEND_CMD,0xb8|s);
 }
+
 void lcd_goto(uint8_t x,uint8_t y) {
 	lcd_goto_xblock(x);
 	lcd_goto_yblock(y);
 }
+
 void lcd_block(uint8_t x,uint8_t y,uint8_t block) {
 	lcd_goto_xblock(x);
 	lcd_goto_yblock(y);
@@ -98,7 +100,6 @@ void lcd_sym(uint8_t sym,uint8_t x,uint8_t y) {
 	lcd_goto(x,y);
 	lcd_databits(SEND_DATA,0);
 }
-
 
 void lcd_str(char* s,uint8_t x,uint8_t y) {
 	while(*s) {
@@ -176,6 +177,7 @@ void lcd_pixel_line_from_left(uint8_t y, uint16_t v) {
 	}
 	lcd_databits(SEND_DATA,r);
 }
+
 void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n) {
 	short unsigned int m,x=maxx-FONT_SIZE-1;
 	if(!n) {
@@ -189,9 +191,34 @@ void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n) {
 		n/=10;
 	}
 }
+
+void lcd_float_from_right(unsigned int maxx,unsigned int y,uint32_t n,uint8_t z) {
+	short unsigned int m,x=maxx-FONT_SIZE-1,t=0;
+	if(!n) {
+		lcd_sym('0',x,y);
+	}
+	while(n) {
+		if(x==(maxx-z*((FONT_SIZE+1)))) {
+			lcd_sym('.',x,y);
+			x-=FONT_SIZE+1;
+			t=1;
+			continue;
+		}
+		m=n%10;
+		lcd_sym('0'+m,x,y);
+		x-=FONT_SIZE+1;
+		n-=m;
+		n/=10;
+	}
+	if(!t&&n) {
+		lcd_str("0.",x-(FONT_SIZE+1),y);
+	}
+}
+
 inline uint8_t lcd_yblockof(uint8_t y) {
 	return((y-y%8)/8);
 }
+
 void lcd_constx_line(uint8_t x,uint8_t ymin,uint8_t ymax) {
 	static uint8_t buf;
 	if(ymin>ymax) {

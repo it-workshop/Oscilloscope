@@ -93,6 +93,7 @@ void draw_menu() {
 			else if(mode==MODE_SPECTRUM) lcd_str("spectrum",state_x,2);
 			else if(mode==MODE_XY) lcd_str("xy",state_x,2);
 			else if(mode==MODE_DUAL) lcd_str("dual",state_x,2);
+			else if(mode==MODE_VOLTAGE) lcd_str("voltage",state_x,2);
 		}
 		else if(menu_state==MENU_MODE_UART) {
 			lcd_str("pc",topstate1_x,1);

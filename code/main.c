@@ -22,7 +22,7 @@ uint8_t menu_state=MENU_NONE; //see menu.h
 
 //state variables
 uint8_t current=0,
-	mode=MODE_DUAL,
+	mode=MODE_SIGNAL,
 	
 	top_state1=0,
 	left_state1=0,
@@ -30,6 +30,8 @@ uint8_t current=0,
 	up_state1=0,
 	down_state1=0,
 	running1=0,
+	
+	trigger_enabled=1,
 	
 	redraw_menu=0,
 	array_filled=0,
@@ -55,6 +57,7 @@ uint16_t adc_reset_c=0,lcd_skip_c=1;
 uint16_t ymin,ymax,c,c1;
 
 
+
 ISR(TIMER1_COMPB_vect) {
 	TCNT1=0;
 	adc_request();
@@ -66,8 +69,7 @@ ISR(TIMER0_OVF_vect) {
 
 ISR(ADC_vect) {
 	if(current<ALL_N||mode==MODE_UART) {
-		if(mode==MODE_SIGNAL||mode==MODE_SPECTRUM||mode==MODE_DUAL
-		 ||mode==MODE_UART_BUF) {
+		if(trigger_enabled) {
 			if(adc_reset_c>=adc_reset&&adc_reset<ADC_RESET_INF) {
 				adc_reset_c=0;
 				array_filled=0;
@@ -92,9 +94,6 @@ ISR(ADC_vect) {
 		}
 		current++;
 	}
-	else if(current>=ALL_N) {
-		//adc_timer_pause();
-	}
 }
 
 int main() {
@@ -111,7 +110,8 @@ int main() {
 	
 	//adc init
 	adc_first();
-	adc_freq_normal();
+	//adc_freq_normal();
+	adc_freq_fast();
 	
 	//button & adc interrupt init
 	TCCR1A=0;
@@ -122,6 +122,7 @@ int main() {
 	_delay_ms(500);
 	lcd_all(0);
 	mode_update();
+	adc_freq_fast();
 	sei();
 	for(;;) {
 		if(mode==MODE_UART) {
@@ -130,6 +131,28 @@ int main() {
 				asm("nop");
 			}
 			capture[0]=ADC>>1;
+		}
+		else if(mode==MODE_VOLTAGE) {
+			if(clear_screen) {
+				lcd_all(0);
+				clear_screen=0;
+				redraw_menu=1;
+			}
+			menu_closed=0;
+			adc_request();
+			while(!(ADCSRA&(1<<ADIF))) {
+				asm("nop");
+			}
+			capture[0]=ADC>>1;
+			for(m=64;m<(DISPLAY_X-FONT_SIZE-1);m++) lcd_block(m,0,0);
+			//lcd_all(0);
+			c=capture[0]/(V_MAX/(VOLTAGE_MAX*VOLTAGE_ERROR));
+			if(c>(VOLTAGE_MAX*VOLTAGE_ERROR)) {
+				c=(VOLTAGE_MAX*VOLTAGE_ERROR);
+			}
+			lcd_float_from_right(DISPLAY_X-(FONT_SIZE+2),0,c,4);
+			lcd_str("v",DISPLAY_X-(FONT_SIZE+2),0);
+			_delay_ms(50);
 		}
 		else {
 			if((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed))) {
@@ -197,24 +220,25 @@ int main() {
 				}
 				if(running) {
 					current=0;
+					trigger_enabled=(mode!=MODE_XY&&mode!=MODE_SPECTRUM);
 					adc_timer_play();
 				}
-				if(!running) osd();
+				else osd();
 			}
-			if(redraw_menu) {
-				if(menu_state!=MENU_NONE) {
-					for(m=0;m<64;m++) {
-						for(u=0;u<4;u++) {
-							lcd_block(m,u,0);
-						}
+		}
+		if(redraw_menu) {
+			if(menu_state!=MENU_NONE) {
+				for(m=0;m<64;m++) {
+					for(u=0;u<4;u++) {
+						lcd_block(m,u,0);
 					}
 				}
-				else {
-					menu_closed=1;
-				}
-				redraw_menu=0;
-				draw_menu();
 			}
+			else {
+				menu_closed=1;
+			}
+			redraw_menu=0;
+			draw_menu();
 		}
 	}
 }

@@ -1,5 +1,5 @@
 PRG            = main
-OBJ            = main.o ffft.o menu.o lcd.o uart.o draw.o buttons.o settings.o
+OBJ            = main.o dac.o
 MODEL          = 644
 FREQ           = 20000000UL
 MCU_TARGET     = atmega$(MODEL)
@@ -8,8 +8,7 @@ DEFS           =
 LIBS           =
 
 CC             = avr-gcc
-ASFLAGS        = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
-ALL_ASFLAGS    = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp $(ASFLAGS) -DF_CPU=$(FREQ)
+ALL_ASFLAGS    = -mmcu=$(MCU_TARGET) -I. -x -DF_CPU=$(FREQ)
 CFLAGS         = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(FREQ)
 LDFLAGS        = -Wl,-Map,$(PRG).map
 
@@ -45,9 +44,6 @@ lst:  $(PRG).lst
 
 fuse:
 	$(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
-
-fonts:
-	$(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U eeprom:w:eeprom_fonts
 
 text: hex
 
