@@ -4,7 +4,6 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
-#include <math.h>
 #include "settings.h"
 #include "uart.h"
 #include "menu.h"
@@ -22,7 +21,7 @@ uint8_t menu_state=MENU_NONE; //see menu.h
 
 //state variables
 uint8_t current=0,
-	mode=MODE_SIGNAL,
+	mode=MODE_DUAL,
 	
 	top_state1=0,
 	left_state1=0,
@@ -32,26 +31,28 @@ uint8_t current=0,
 	running1=0,
 	
 	trigger_enabled=1,
-	
+	input=0,
 	redraw_menu=0,
 	array_filled=0,
 	error_storage=0,
-	spectrum_x_zoom=0,
-	spectrum_y_zoom=0,
+	
 	running=1,
 
 	signal_type=DRAW_LINES,
-
-	input=0;
+	spectrum_x_zoom=0,
+	spectrum_y_zoom=0,
+	vzoom=1,
+	tzoom=1;
 uint16_t adc_error=ADC_ERROR_STEP,
 	adc_check=5,
 	adc_reset=ADC_RESET_DEFAULT,
 	lcd_skip=1;
 uint8_t menu_closed=0,clear_screen=0;
+int8_t vpos=0;
+
 //counters
 uint8_t m=1,s,u;
 uint16_t adc_reset_c=0,lcd_skip_c=1;
-
 
 //temp
 uint16_t ymin,ymax,c,c1;
@@ -101,6 +102,7 @@ int main() {
 	welcome();
 
 	//spi
+
 	//SPCR=(1<<6)|0b11|(1<<4);
 
 	// pins init
@@ -160,7 +162,7 @@ int main() {
 			//}
 		}
 		else {
-			if((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed))&&mode!=MODE_UART_BUF) {
+			if(((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed)))&&(mode!=MODE_UART_BUF)) {
 				if(clear_screen) {
 					lcd_all(0);
 					clear_screen=0;
@@ -241,5 +243,4 @@ int main() {
 			draw_menu();
 		}
 	}
-	_delay_ms(1);
 }

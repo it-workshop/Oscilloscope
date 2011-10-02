@@ -22,7 +22,7 @@ int main() {
 
 	TCCR1A=0;
 	TCNT1=0x0000;
-	OCR1B=300;
+	OCR1B=1;
 	
 	TIMSK1|=(1<<OCIE1B);
 	TCCR1B=0x001;

@@ -24,9 +24,11 @@ extern uint8_t current,
 	spectrum_y_zoom,
 	running,
 	input,
+	vzoom,
+	tzoom,
 	signal_type,
 	m,u,s;
-extern int8_t menu_state;
+extern int8_t menu_state,vpos;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
@@ -249,6 +251,36 @@ void buttons_process() {
 			}
 			if(left_pressed()) {
 				decrement(signal_type,DRAW_MIN,DRAW_MAX);
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==MENU_VIEW_TZOOM) {
+			if(right_pressed()) {
+				increment(tzoom,TZOOM_MIN,TZOOM_MAX);
+				redraw_menu=1;
+			}
+			if(left_pressed()) {
+				decrement(tzoom,TZOOM_MIN,TZOOM_MAX);
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==MENU_VIEW_VZOOM) {
+			if(right_pressed()) {
+				increment(vzoom,VZOOM_MIN,VZOOM_MAX);
+				redraw_menu=1;
+			}
+			if(left_pressed()) {
+				decrement(vzoom,VZOOM_MIN,VZOOM_MAX);
+				redraw_menu=1;
+			}
+		}
+		else if(menu_state==MENU_VIEW_VPOS) {
+			if(right_pressed()) {
+				increment(vpos,VPOS_MIN,VPOS_MAX);
+				redraw_menu=1;
+			}
+			if(left_pressed()) {
+				decrement(vpos,VPOS_MIN,VPOS_MAX);
 				redraw_menu=1;
 			}
 		}

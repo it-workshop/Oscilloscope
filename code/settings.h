@@ -27,6 +27,15 @@
 #define ADC_RESET_MIN ADC_RESET_STEP
 #define ADC_RESET_INF (20*ALL_N)
 
+#define TZOOM_MIN 1
+#define TZOOM_MAX 20
+
+#define VPOS_MIN -31
+#define VPOS_MAX 31
+
+#define VZOOM_MIN 1
+#define VZOOM_MAX 10
+
 #define SPECTRUM_ZOOM_MIN 0
 #define SPECTRUM_ZOOM_MAX_Y 6
 #define SPECTRUM_ZOOM_MAX_X 5
@@ -47,6 +56,8 @@
 #define MODE_VOLTAGE 5
 #define MODE_UART 6
 #define MODE_UART_BUF 7
+
+#define DELTA_V_FOR_PIXEL V_MAX/64
 
 #define MODE_MAX 5
 

@@ -17,7 +17,7 @@ inline void dfreq();
 void osd();
 void welcome();
 
-inline uint8_t todisplay(uint16_t a);
+uint8_t todisplay(uint8_t a);
 inline void dfreq_only(uint8_t x,uint8_t y);
 
 #define osd_delay() _delay_ms(200)

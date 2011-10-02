@@ -23,27 +23,39 @@ extern uint8_t current,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
 	menu_state,
+	tzoom,
+	vzoom,
+
 	running;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
 	lcd_skip;
 
-inline uint8_t todisplay(uint16_t a) {
-	if(menu_state==MENU_NONE) return(DISPLAY_Y-1-(a>>9));
-	else return(DISPLAY_Y-1-(a>>10));
+extern int8_t vpos;
+
+uint8_t todisplay(uint8_t a) {
+	a/=tzoom;
+	int16_t b;
+	if(capture[a]&~(0xffff>>(vzoom))) b=V_MAX;
+	else b=capture[a]<<(vzoom-1);
+	if(b+vpos*DELTA_V_FOR_PIXEL>V_MAX) b=V_MAX;
+	else if(b+vpos*DELTA_V_FOR_PIXEL<0) b=0;
+	else b+=vpos*DELTA_V_FOR_PIXEL;
+	if(menu_state==MENU_NONE) return(DISPLAY_Y-1-(b>>9));
+	else return(DISPLAY_Y-1-(b>>10));
 }
 
 void draw_signal(uint8_t draw_what,uint8_t draw_type) {
 	for(m=0;m<ALL_N;m++) {
-		c=todisplay(capture[m]);
+		c=todisplay(m);
 		ymin=c;
 		ymax=c;
 		if(draw_what==DRAW_SIGNAL_DUAL) {
 			if(draw_type==DRAW_LINES) {
 				//prev
 				if(m>1) {
-					c1=todisplay(capture[m-2]);
+					c1=todisplay(m-2);
 					if(c1<c) ymin=(c1+c)>>1;
 					if(c1>c) ymax=(c1+c)>>1;
 				}
@@ -54,7 +66,7 @@ void draw_signal(uint8_t draw_what,uint8_t draw_type) {
 				
 				//next
 				if(m<(ALL_N-2)) {
-					c1=todisplay(capture[m+2]);
+					c1=todisplay(m+2);
 					if(c1<c) ymin=min(ymin,(c+c1)>>1);
 					if(c1>c) ymax=max(ymax,(c1+c)>>1);
 				}
@@ -66,7 +78,7 @@ void draw_signal(uint8_t draw_what,uint8_t draw_type) {
 			if(draw_type==DRAW_LINES) {
 				//prev
 				if(m) {
-					c1=todisplay(capture[m-1]);
+					c1=todisplay(m-1);
 					if(c1<c) ymin=(c1+c)>>1;
 					if(c1>c) ymax=(c1+c)>>1;
 				}
@@ -77,7 +89,7 @@ void draw_signal(uint8_t draw_what,uint8_t draw_type) {
 				
 				//next
 				if(m<(ALL_N-1)) {
-					c1=todisplay(capture[m+1]);
+					c1=todisplay(m+1);
 					if(c1<c) ymin=min(ymin,(c+c1)>>1);
 					if(c1>c) ymax=max(ymax,(c1+c)>>1);
 				}
@@ -110,9 +122,10 @@ void osd() {
 }
 
 void welcome() {
-	lcd_str("digital oscilloscope\n  v1.0",0,0);
-	lcd_str("volodin sergey\ni.179e.net",0,3);
-	lcd_str("fft lib. by chan",0,6);
+	lcd_str("digital oscilloscope\n v1.0",0,0);
+	lcd_str("* sergey volodin\n (etoestja@ya.ru)",0,3);
+	lcd_str("* arshavir ter-\n  gabrielyan",0,5);
+	lcd_str("* fft lib. by chan",0,7);
 }
 
 inline void dfreq_only(uint8_t x,uint8_t y) {

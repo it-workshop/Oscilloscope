@@ -22,11 +22,14 @@ extern uint8_t current,
 	spectrum_y_zoom,
 	running,
 	menu_state,
+	vzoom,
+	tzoom,
 	input;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
 	lcd_skip;
+extern int8_t vpos;
 
 void menu_top_change() {
 	if(right_pressed()) {
@@ -81,6 +84,7 @@ void draw_menu() {
 			lcd_str("about",topstate_x,topstate_y);
 		
 		if(menu_state==(MENU_ABOUT|1)) {
+			lcd_all(0);
 			welcome();
 			_delay_ms(1000);
 			menu_state=menu_topstate();
@@ -153,14 +157,26 @@ void draw_menu() {
 			lcd_str("sp. zoom",topstate1_x,1);
 			lcd_num_from_right((DISPLAY_X/2-1),2,1<<spectrum_y_zoom);
 		}
-                else if(menu_state==MENU_VIEW_SIGNALTYPE) {
-                        lcd_str("sign. type",topstate1_x,1);
+		else if(menu_state==MENU_VIEW_SIGNALTYPE) {
+			lcd_str("sign. type",topstate1_x,1);
 			if(signal_type==DRAW_LINES) {
 				lcd_str("lines",state_x,2);
 			}
 			else if(signal_type==DRAW_DOTS) {
 				lcd_str("dots",state_x,2);
 			}
-                }
+		}
+		else if(menu_state==MENU_VIEW_TZOOM) {
+			lcd_str("time zoom",topstate1_x,1);
+			lcd_num_from_right((DISPLAY_X/2-1),2,tzoom);
+		}
+		else if(menu_state==MENU_VIEW_VZOOM) {
+			lcd_str("volt. zoom",topstate1_x,1);
+			lcd_num_from_right((DISPLAY_X/2-1),2,1<<(vzoom-1));
+		}
+		else if(menu_state==MENU_VIEW_VPOS) {
+			lcd_str("volt. pos.",topstate1_x,1);
+			lcd_signed_num_from_right((DISPLAY_X/2-1),2,vpos);
+		}
 	}
 }

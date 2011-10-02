@@ -44,6 +44,7 @@ void lcd_line_from_bottom(uint8_t x1,uint8_t y1);
 void lcd_pixel_line_from_left(uint8_t y, uint16_t v);
 void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n);
 void lcd_float_from_right(unsigned int maxx,unsigned int y,uint32_t n,uint8_t z);
+void lcd_signed_num_from_right(unsigned int maxx,unsigned int y,int32_t k);
 inline uint8_t lcd_yblockof(uint8_t y);
 void lcd_constx_line(uint8_t x,uint8_t ymin,uint8_t ymax);
 

@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "lcd.h"
+#include "settings.h"
 
 /* configuration */
 //lcd's setup pins PORT
@@ -190,6 +191,23 @@ void lcd_num_from_right(unsigned int maxx,unsigned int y,uint32_t n) {
 		n-=m;
 		n/=10;
 	}
+}
+
+void lcd_signed_num_from_right(unsigned int maxx,unsigned int y,int32_t k) {
+	short unsigned int m,x=maxx-FONT_SIZE-1;
+	uint16_t n=abs(k);
+	if(!n) {
+		lcd_sym('0',x,y);
+	}
+	while(n) {
+		m=n%10;
+		lcd_sym('0'+m,x,y);
+		x-=FONT_SIZE+1;
+		n-=m;
+		n/=10;
+	}
+	if(k<0)
+		lcd_sym('-',x,y);
 }
 
 void lcd_float_from_right(unsigned int maxx,unsigned int y,uint32_t n,uint8_t z) {
