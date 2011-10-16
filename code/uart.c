@@ -34,6 +34,9 @@ extern uint8_t current,
 	spectrum_x_zoom,
 	spectrum_y_zoom,
 	menu_state,
+	
+	mode_update_flag,
+	
 	running;
 extern uint16_t adc_error,
 	adc_check,
@@ -78,7 +81,15 @@ ISR(USART0_TX_vect) {
 ISR(USART0_RX_vect) {
 	uint8_t tmp;
 	tmp=UDR;
+	//static uint16_t x1=0;
 	if(mode==MODE_UART||mode==MODE_UART_BUF) {
+		/*lcd_num_from_right(DISPLAY_X-1,3,adc_error);
+		lcd_num_from_right(DISPLAY_X-1,4,adc_reset);
+		lcd_num_from_right(DISPLAY_X-1,5,adc_check);
+		lcd_num_from_right(DISPLAY_X-1,6,action);
+		lcd_num_from_right(DISPLAY_X-1,7,x1);
+		lcd_sym(tmp,DISPLAY_X/2-1-FONT_SIZE,6);
+		x1++;*/
 		uart_action(tmp);
 	}
 }
@@ -103,10 +114,12 @@ void uart_action(uint8_t c) {
 				}
 				else if(mode==MODE_UART_BUF) {
 					if(current>=(ALL_N-1)) {
+						adc_timer_pause();
 						uart_putc(capture[c2]&0xff);
 						uart_buf=capture[c2++]>>8;
 						uart_buf_empty=0;
-						if(c2>=(ALL_N-1)) {
+						if(c2>=(ALL_N)) {
+							adc_timer_pause();
 							current=0;
 							c2=0;
 						}
@@ -116,25 +129,42 @@ void uart_action(uint8_t c) {
 			}
 		}
 		else if(c=='n') {
+			uart_buf_empty=1;
 			mode=MODE_UART;
-			mode_update();
+			mode_update_flag=1;
 		}
 		else if(c=='b') {
+			uart_buf_empty=1;
 			current=0;
 			action=UART_ACTION_B_RC0;
 		}
+		else if(c=='t') {
+			uart_buf_empty=1;
+			action=UART_ACTION_TV_RC0;
+		}
+		else if(c=='r') {
+			uart_buf_empty=1;
+			action=UART_ACTION_TR_RC0;
+		}
+	}
+	else if(action==UART_ACTION_TV_RC0) {
+		//adc_check=c;
+		action=UART_ACTION_DEFAULT;
+	}
+	else if(action==UART_ACTION_TR_RC0) {
+		adc_reset=c*ALL_N;
+		action=UART_ACTION_DEFAULT;
 	}
 	else if(action==UART_ACTION_B_RC0) {
 		c1=c;
 		action=UART_ACTION_B_RC1;
-		current=0;
 	}
 	else if(action==UART_ACTION_B_RC1) {
 		c1|=c<<8;
 		mode=MODE_UART_BUF;
 		adc_period=c1;
 		action=UART_ACTION_DEFAULT;
-		mode_update();
+		mode_update_flag=1;
 		current=0;
 	}
 }

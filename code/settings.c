@@ -40,8 +40,9 @@ extern uint8_t m,s,u;
 extern uint16_t ymin,ymax,c,c1;
 
 void mode_update() {
+	cli();
 	if((mode==MODE_UART_BUF)||(mode==MODE_UART)) {
-		uart_init();
+		//uart_init();
 		//adc_check=0;
 		redraw_menu=0;
 		buttons_timer_pause();
@@ -64,24 +65,28 @@ void mode_update() {
 		//adc_freq_normal();
 		adc_freq_fast();
 	}
-	if(mode==MODE_UART||mode==MODE_VOLTAGE) {
+	if((mode==MODE_UART)||(mode==MODE_VOLTAGE)) {
 		adc_timer_pause();
-		ADCSRA&=~(1<<ADIE);
+		adc_interrupt_pause();
 		if(mode==MODE_VOLTAGE) {
 			buttons_timer_play();
 		}
 	}
 	else {
 		running=1;
-		ADCSRA|=(1<<ADIE);
+		adc_interrupt_play();
 		if(mode!=MODE_UART_BUF) {
 			buttons_timer_play();
 		}
-		if(running) {
+		if(running||mode==MODE_UART_BUF) {
 			adc_timer_play();
+		}
+		else {
+			adc_timer_pause();
 		}
 	}
 	current=0;
+	sei();
 }
 
 void return_control() {

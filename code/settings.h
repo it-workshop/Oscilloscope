@@ -74,9 +74,12 @@
 
 #define adc_request() ADCSRA|=1<<6
 #define adc_timer_play() TIMSK1|=(1<<OCIE1B);TCCR1B=0b001
-#define adc_timer_pause() TIMSK1&=~(1<<OCIE1B);TCCR1B=0;current=0
+#define adc_timer_pause() TIMSK1&=~(1<<OCIE1B);TCCR1B=0;
 #define buttons_timer_play() TIMSK0|=(1<<TOIE0);TCCR0B=0b101
 #define buttons_timer_pause() TIMSK0&=~(1<<TOIE0);TCCR0B=0
+
+#define adc_interrupt_play() ADCSRA|=(1<<ADIE)
+#define adc_interrupt_pause() ADCSRA&=~(1<<ADIE)
 
 #define adc_freq_normal() ADCSRA=0b10011101
 #define adc_freq_fast() ADCSRA=0b10011010

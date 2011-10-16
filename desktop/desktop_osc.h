@@ -21,10 +21,12 @@ protected:
 
 private:
     QTimer timer;
+    int mk_frequency;
     unsigned int msecs;
     unsigned int period;
     unsigned int ALL_N;
     unsigned int current;
+    unsigned int position;
     unsigned short int mode;
     bool answered;
     uart uartobj;

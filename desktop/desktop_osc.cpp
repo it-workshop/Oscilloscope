@@ -20,7 +20,8 @@ void desktop_osc::init_graph() {
             d_x[i]=(msecs?msecs:1)*i;
             d_y[i]=0;
         }
-}
+    }
+    position=0;
     ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, PLOT_SIZE*(msecs?msecs:1));
     ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 5);
 }
@@ -29,6 +30,7 @@ desktop_osc::desktop_osc(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::desktop_osc)
 {
+    mk_frequency=20000000;
     msecs=0;
     answered=true;
     ALL_N=128;
@@ -78,20 +80,20 @@ void desktop_osc::changeEvent(QEvent *e) {
 }
 
 void desktop_osc::to_graph(double y,bool replot) {
-    unsigned int i;
-    for(i=PLOT_SIZE-1;i>0;i--)
-        d_y[i]=d_y[i-1];
-    d_y[0]=y;
+    d_y[position++]=y;
+    if(position==PLOT_SIZE) position=0;
     if(replot) ui->qwtPlot->replot();
 }
 
 void desktop_osc::clear_graph() {
+    position=0;
     unsigned int i;
     for(i=PLOT_SIZE-1;i>0;i--)
         d_y[i]=0;
 }
 
 void desktop_osc::on_pushButton_clicked() {
+    timer.stop();
     mode=MODE_UART;
     uartobj.uwrite('n');
     msecs=ui->spinBox->value();
@@ -105,11 +107,16 @@ void desktop_osc::update() {
         uartobj.uwrite('g');
         uartobj.uread_error_reset();
         unsigned int r=uartobj.uread()|(uartobj.uread()<<8);
-        to_graph(double(r)/6553,mode==MODE_UART||current==(ALL_N-1));
-        if(current==(ALL_N-1)) {
+        to_graph(double(r)/6553,mode==MODE_UART||current==(ALL_N));
+        if(current==(ALL_N)) {
             current=0;
-            if(mode==MODE_UART_BUF)
+            if(mode==MODE_UART_BUF) {
+                uartobj.flush();
+                uartobj.uwrite('b');
+                uartobj.uwrite(period&0xff);
+                uartobj.uwrite(period>>8);
                 clear_graph();
+            }
         }
         else current++;
         answered=true;
@@ -128,8 +135,12 @@ void desktop_osc::on_pushButton_3_clicked() {
 void desktop_osc::on_pushButton_4_clicked() {
     mode=MODE_UART_BUF;
     timer.stop();
-    period=ui->spinBox_2->value();
+    period=mk_frequency/ui->spinBox_2->value();
     uartobj.flush();
+    uartobj.uwrite('r');
+    uartobj.uwrite(20);
+    uartobj.uwrite('t');
+    uartobj.uwrite(2);
     uartobj.uwrite('b');
     uartobj.uwrite(period&0xff);
     uartobj.uwrite(period>>8);

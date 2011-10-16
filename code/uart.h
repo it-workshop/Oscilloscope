@@ -32,6 +32,10 @@
 
 #define UART_ACTION_B_RC0   1
 #define UART_ACTION_B_RC1   2
+
+#define UART_ACTION_TV_RC0   3
+#define UART_ACTION_TR_RC0   4
+
 #define UART_ACTION_DEFAULT 0
 
 void uart_flush();

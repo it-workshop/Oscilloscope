@@ -30,6 +30,8 @@ uint8_t current=0,
 	down_state1=0,
 	running1=0,
 	
+	mode_update_flag=0,
+	
 	trigger_enabled=1,
 	input=0,
 	redraw_menu=0,
@@ -55,7 +57,7 @@ uint8_t m=1,s,u;
 uint16_t adc_reset_c=0,lcd_skip_c=1;
 
 //temp
-uint16_t ymin,ymax,c,c1;
+uint16_t ymin,ymax,c,c1,t_adcbuf;
 
 
 
@@ -70,6 +72,19 @@ ISR(TIMER0_OVF_vect) {
 
 ISR(ADC_vect) {
 	if(current<ALL_N||mode==MODE_UART) {
+		t_adcbuf=ADC>>1;
+		if(mode==MODE_XY) {
+			if(!(current%2)) {
+				adc_timer_pause();
+				adc_second();
+				for(s=0;s<3;s++) asm("nop");
+				adc_request();
+			}
+			else {
+				adc_first();
+				adc_timer_play();
+			}
+		}
 		if(trigger_enabled) {
 			if(adc_reset_c>=adc_reset&&adc_reset<ADC_RESET_INF) {
 				adc_reset_c=0;
@@ -78,27 +93,24 @@ ISR(ADC_vect) {
 				return;
 			}
 			if(array_filled&&current<adc_check) {
-				if(absdiff((ADC>>1),capture[current])>adc_error) {
+				if(absdiff(t_adcbuf,capture[current])>adc_error) {
 					adc_reset_c++;
 					current=0;
 					return;
 				}
 			}
 		}
-		capture[current]=ADC>>1;
-		if(mode==MODE_XY) {
-			if(!(current%2)) {
-				adc_second();
-				adc_request();
-			}
-			else adc_first();
-		}
+		capture[current]=t_adcbuf;
 		current++;
+	}
+	else {
+		adc_timer_pause();
 	}
 }
 
 int main() {
 	lcd_init();
+	uart_init();
 	welcome();
 
 	//spi
@@ -126,12 +138,22 @@ int main() {
 	adc_freq_fast();
 	sei();
 	for(;;) {
+		if(mode_update_flag) {
+			cli();
+			mode_update_flag=0;
+			mode_update();
+			sei();
+		}
 		if(mode==MODE_UART) {
+			cli();
 			adc_request();
 			while(!(ADCSRA&(1<<ADIF))) {
 				asm("nop");
 			}
 			capture[0]=ADC>>1;
+			sei();
+			_delay_us(1);
+			continue;
 		}
 		else if(mode==MODE_VOLTAGE) {
 			if(clear_screen) {
@@ -156,10 +178,7 @@ int main() {
 			_delay_ms(50);
 		}
 		else if(mode==MODE_UART_BUF) {
-			//for(;;) {
-				//if(mode==MODE_DUAL) break;
-				_delay_ms(1);
-			//}
+			_delay_us(1);
 		}
 		else {
 			if(((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed)))&&(mode!=MODE_UART_BUF)) {
