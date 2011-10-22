@@ -104,15 +104,6 @@ void desktop_osc::clear_graph() {
         d_y[i]=0;
 }
 
-void desktop_osc::on_pushButton_clicked() {
-    timer.stop();
-    mode=MODE_UART;
-    uartobj.uwrite('n');
-    msecs=ui->spinBox->value();
-    answered=true;
-    init_graph();
-}
-
 void desktop_osc::update() {
     if(answered||mode==MODE_UART) {
         answered=false;
@@ -150,6 +141,9 @@ void desktop_osc::on_pushButton_4_clicked() {
     period=mk_frequency/ui->spinBox_2->value();
     uartobj.flush();
 
+    uartobj.uwrite('i');
+    uartobj.uwrite(ui->input->currentIndex());
+
     uartobj.uwrite('t');
     uartobj.uwrite(ui->trigger_check->value());
 
@@ -165,6 +159,19 @@ void desktop_osc::on_pushButton_4_clicked() {
 
     current=0;
     msecs=1;
+    answered=true;
+    init_graph();
+}
+
+void desktop_osc::on_pushButton_clicked() {
+    timer.stop();
+    mode=MODE_UART;
+    uartobj.uwrite('n');
+
+    uartobj.uwrite('i');
+    uartobj.uwrite(ui->input->currentIndex());
+
+    msecs=ui->spinBox->value();
     answered=true;
     init_graph();
 }

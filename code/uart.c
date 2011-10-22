@@ -32,6 +32,7 @@ extern uint8_t current,
 	array_filled,
 	error_storage,
 	spectrum_x_zoom,
+	input,
 	spectrum_y_zoom,
 	menu_state,
 	
@@ -146,6 +147,10 @@ void uart_action(uint8_t c) {
 			uart_buf_empty=1;
 			action=UART_ACTION_TV_RC0;
 		}
+		else if(c=='i') {
+			uart_buf_empty=1;
+			action=UART_ACTION_TI_RC0;
+		}
 		else if(c=='r') {
 			uart_buf_empty=1;
 			action=UART_ACTION_TR_RC0;
@@ -165,6 +170,11 @@ void uart_action(uint8_t c) {
 	}
 	else if(action==UART_ACTION_TR_RC0) {
 		adc_reset=c*ALL_N;
+		action=UART_ACTION_DEFAULT;
+	}
+	else if(action==UART_ACTION_TI_RC0) {
+		input=c;
+		mode_update_flag=1;
 		action=UART_ACTION_DEFAULT;
 	}
 	else if(action==UART_ACTION_B_RC0) {

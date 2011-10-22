@@ -36,6 +36,7 @@
 #define UART_ACTION_TV_RC0   3
 #define UART_ACTION_TR_RC0   4
 #define UART_ACTION_TE_RC0   5
+#define UART_ACTION_TI_RC0   6
 
 #define UART_ACTION_DEFAULT 0
 

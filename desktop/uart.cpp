@@ -19,7 +19,7 @@ uart::uart() {
     tty_fd=-1;
     device="/dev/ttyUSB0";
     rate=9600;
-    maxwait=20;
+    maxwait=5;
 }
 
 void uart::uopen() {
