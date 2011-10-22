@@ -117,7 +117,7 @@ int main() {
 
 	//SPCR=(1<<6)|0b11|(1<<4);
 
-	// pins init
+	// pins inittrigger_enabled=1
 	DDRA=0x00;
 	PORTA=252;
 	
@@ -142,6 +142,7 @@ int main() {
 			cli();
 			mode_update_flag=0;
 			mode_update();
+			trigger_enabled=1;
 			sei();
 		}
 		if(mode==MODE_UART) {
@@ -181,7 +182,7 @@ int main() {
 			_delay_us(1);
 		}
 		else {
-			if(((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed)))&&(mode!=MODE_UART_BUF)) {
+			if(((current>=(ALL_N-1))||((!running)&&(redraw_menu||menu_closed)))) {
 				if(clear_screen) {
 					lcd_all(0);
 					clear_screen=0;
@@ -259,6 +260,48 @@ int main() {
 				menu_closed=1;
 			}
 			redraw_menu=0;
+			if(mode==MODE_UART||mode==MODE_UART_BUF) {
+				if(menu_state!=MENU_NONE) {
+					menu_state=MENU_NONE;
+					lcd_all(0);
+					lcd_str(
+"pc mode: you can re-\nturn control from pc or reboot the device.",0,0
+					);
+					current=0;
+					mode_update();
+				}
+				else {
+					for(m=0;m<DISPLAY_X;m++) {
+						for(u=4;u<LCD_YBLOCKS;u++) lcd_block(m,u,0);
+					}
+				}
+				
+				lcd_str("t-check",0,5);
+				if(adc_check) {
+					lcd_num_from_right((DISPLAY_X-1),5,adc_check);
+				}
+				else {
+					lcd_str("disabled",DISPLAY_X-1-(FONT_SIZE+1)*8,5);
+				}
+				
+				lcd_str("t-error",0,6);
+				lcd_str("%",DISPLAY_X-2-FONT_SIZE,6);
+				lcd_num_from_right((DISPLAY_X-2-FONT_SIZE),6,
+					adc_error/ADC_ERROR_STEP);
+				
+				lcd_str("t-reset",0,7);
+				if(adc_reset<ADC_RESET_INF) {
+					lcd_num_from_right((DISPLAY_X-1)-4*(FONT_SIZE+1),7,
+					 adc_reset/ADC_RESET_STEP);
+					lcd_str("*",(DISPLAY_X-1)-4*(FONT_SIZE+1),7);
+					lcd_num_from_right((DISPLAY_X-1),7,ALL_N);
+				}
+				else lcd_str("never",DISPLAY_X-1-(FONT_SIZE+1)*5,7);
+				
+				lcd_str("frequency",0,4);
+				dfreq_only(DISPLAY_X-1-2*(FONT_SIZE+1),4);
+				lcd_str("hz",DISPLAY_X-1-2*(FONT_SIZE+1),4);
+			}
 			draw_menu();
 		}
 	}

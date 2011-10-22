@@ -13,16 +13,28 @@
 enum{MODE_UART_BUF,MODE_UART};
 void desktop_osc::init_graph() {
     timer.stop();
+    float one;
+    unsigned int max;
+    if(mode==MODE_UART) {
+        ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T/ms");
+        one=msecs;
+        max=PLOT_SIZE;
+    }
+    else {
+        max=ALL_N;
+        one=1000000.*period/mk_frequency;
+        ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T/us");
+    }
     if(msecs) {
         timer.setInterval(msecs);
         timer.start();
         for(int i=0;i<PLOT_SIZE;i++) {
-            d_x[i]=(msecs?msecs:1)*i;
+            d_x[i]=one*i;
             d_y[i]=0;
         }
     }
     position=0;
-    ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, PLOT_SIZE*(msecs?msecs:1));
+    ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, max*one);
     ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 5);
 }
 
@@ -137,13 +149,20 @@ void desktop_osc::on_pushButton_4_clicked() {
     timer.stop();
     period=mk_frequency/ui->spinBox_2->value();
     uartobj.flush();
-    uartobj.uwrite('r');
-    uartobj.uwrite(20);
+
     uartobj.uwrite('t');
-    uartobj.uwrite(2);
+    uartobj.uwrite(ui->trigger_check->value());
+
+    uartobj.uwrite('r');
+    uartobj.uwrite(ui->trigger_reset->value());
+
+    uartobj.uwrite('e');
+    uartobj.uwrite(ui->trigger_error->value());
+
     uartobj.uwrite('b');
     uartobj.uwrite(period&0xff);
     uartobj.uwrite(period>>8);
+
     current=0;
     msecs=1;
     answered=true;

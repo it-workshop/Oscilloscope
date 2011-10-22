@@ -140,15 +140,8 @@ void buttons_process() {
 		}
 		else if(menu_state==MENU_MODE_UART) {
 			if(right_pressed()) {
-				lcd_all(0);
-				lcd_str("pc mode",0,0);
-				lcd_str("you can return\ncontrol from pc or\nreboot the device.",0,2);
-				u=127;
-				m=127;
-				s=127;
 				mode=MODE_UART;
-				redraw_menu=0;
-				mode_update();
+				redraw_menu=1;
 			}
 		}
 		

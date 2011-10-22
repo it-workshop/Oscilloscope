@@ -9,7 +9,7 @@ double f(double x) {
 }
 
 int main() {
- unsigned int N=200,set_min=0,set_max=4095;
+ unsigned int N=50,set_min=0,set_max=4095;
  double maxx=2*M_PI,zoom=maxx/(N*1.),offset=-maxx/2;
 
  double* V=new double[N];

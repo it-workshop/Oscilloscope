@@ -35,13 +35,16 @@ extern uint8_t current,
 	spectrum_y_zoom,
 	menu_state,
 	
+	trigger_enabled,
+	
 	mode_update_flag,
 	
 	running;
 extern uint16_t adc_error,
 	adc_check,
 	adc_reset,
-	lcd_skip;
+	lcd_skip,
+	adc_reset_c;
 
 uint8_t uart_buf,uart_buf_empty=1;
 
@@ -119,7 +122,8 @@ void uart_action(uint8_t c) {
 						uart_buf=capture[c2++]>>8;
 						uart_buf_empty=0;
 						if(c2>=(ALL_N)) {
-							adc_timer_pause();
+							if(!array_filled) array_filled=1;
+							adc_reset_c=0;
 							current=0;
 							c2=0;
 						}
@@ -146,9 +150,17 @@ void uart_action(uint8_t c) {
 			uart_buf_empty=1;
 			action=UART_ACTION_TR_RC0;
 		}
+		else if(c=='e') {
+			uart_buf_empty=1;
+			action=UART_ACTION_TE_RC0;
+		}
 	}
 	else if(action==UART_ACTION_TV_RC0) {
-		//adc_check=c;
+		adc_check=c;
+		action=UART_ACTION_DEFAULT;
+	}
+	else if(action==UART_ACTION_TE_RC0) {
+		adc_error=c*ADC_ERROR_STEP;
 		action=UART_ACTION_DEFAULT;
 	}
 	else if(action==UART_ACTION_TR_RC0) {
@@ -161,10 +173,12 @@ void uart_action(uint8_t c) {
 	}
 	else if(action==UART_ACTION_B_RC1) {
 		c1|=c<<8;
-		mode=MODE_UART_BUF;
 		adc_period=c1;
+		mode=MODE_UART_BUF;
 		action=UART_ACTION_DEFAULT;
+		trigger_enabled=1;
 		mode_update_flag=1;
+		trigger_enabled=1;
 		current=0;
 	}
 }

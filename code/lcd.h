@@ -22,6 +22,7 @@
 #define DISPLAY_X 128
 #define DISPLAY_Y 64
 #define FONT_SIZE 5
+#define LCD_YBLOCKS 8
 
 #define SEND_CMD 1
 #define SEND_DATA 2

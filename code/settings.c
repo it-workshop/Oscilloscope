@@ -27,6 +27,7 @@ extern uint8_t current,
 	spectrum_y_zoom,
 	running,
 	menu_state,
+	trigger_enabled,
 	input;
 extern uint16_t adc_error,
 	adc_check,
@@ -44,7 +45,7 @@ void mode_update() {
 	if((mode==MODE_UART_BUF)||(mode==MODE_UART)) {
 		//uart_init();
 		//adc_check=0;
-		redraw_menu=0;
+		redraw_menu=1;
 		buttons_timer_pause();
 	}
 	else {
@@ -86,6 +87,7 @@ void mode_update() {
 		}
 	}
 	current=0;
+	trigger_enabled=(mode!=MODE_XY&&mode!=MODE_SPECTRUM);
 	sei();
 }
 
