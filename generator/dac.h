@@ -10,10 +10,10 @@
 #define DAC_CMDDDR DDRB
 #define DAC_CMDPORT PORTB
 #define DAC_CS 1
-#define DAC_CLK (1<<1)
-#define DAC_SDI (1<<2)
-#define DAC_LD (1<<3)
-#define DAC_CLR (1<<4)
+#define DAC_CLK (1 << 1)
+#define DAC_SDI (1 << 2)
+#define DAC_LD (1 << 3)
+#define DAC_CLR (1 << 4)
 #define dac_delay() asm("nop")
 
 void dac_init();
