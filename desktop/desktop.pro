@@ -3,7 +3,7 @@
 # -------------------------------------------------
 TARGET = desktop
 TEMPLATE = app
-QWT_ROOT = ../..
+QWT_ROOT = .
 include( $${QWT_ROOT}/qwtconfig.pri )
 SUFFIX_STR = 
 VVERSION = $$[QT_VERSION]
@@ -27,9 +27,9 @@ isEmpty(VVERSION) {
 else { 
     # Qt 4
     DEPENDPATH += /usr/include/qwt-qt4
-    INCLUDEPATH += /usr/include/qwt-qt4
+    INCLUDEPATH += /usr/include/qwt
     LIBS += -L$${QWT_ROOT}/lib \
-        -l$${QWTLIB}-qt4
+        -l$${QWTLIB}
 }
 win32 { 
     contains(CONFIG, QwtDll) { 

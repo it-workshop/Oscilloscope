@@ -6,7 +6,8 @@
 #include <fcntl.h>
 #include <termios.h>
 
-class uart {
+class uart
+{
 private:
     struct termios tio;
     int tty_fd;

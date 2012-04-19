@@ -9,8 +9,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        symbols.cpp \
+    symbols_long.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += symbols.h
 
-FORMS    += mainwindow.ui
+FORMS    += symbols.ui
