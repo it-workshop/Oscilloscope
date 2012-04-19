@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef SYMBOLS_H
+#define SYMBOLS_H
 
 #include <QMainWindow>
 #include <QTimer>
@@ -8,23 +8,23 @@
 using std::string;
 
 namespace Ui {
-    class MainWindow;
+    class Symbols;
 }
 
-class MainWindow : public QMainWindow {
+class Symbols : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    Symbols(QWidget *parent = 0);
+    ~Symbols();
 
 protected:
     void changeEvent(QEvent *e);
 
 private:
     typedef unsigned char value_t;
-    Ui::MainWindow *ui;
+    Ui::Symbols *ui;
 
-    unsigned int SYM,VAL;
+    unsigned int SYM, VAL;
     string filename;
     value_t** values;
     short unsigned int current;
@@ -47,4 +47,4 @@ private slots:
     void on_pushButton_clicked();
 };
 
-#endif // MAINWINDOW_H
+#endif // SYMBOLS_H
