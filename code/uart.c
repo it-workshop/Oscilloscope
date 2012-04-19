@@ -16,8 +16,8 @@
 #include "lcd.h"
 #include "settings.h"
 
-extern uint8_t m,s,u;
-extern uint16_t ymin,ymax,c,c1;
+extern uint8_t m, s, u;
+extern uint16_t ymin, ymax, c, c1;
 extern uint16_t capture[ALL_N];
 
 extern uint8_t current,
@@ -47,14 +47,14 @@ extern uint16_t adc_error,
        lcd_skip,
        adc_reset_c;
 
-uint8_t uart_buf,uart_buf_empty=1;
+uint8_t uart_buf, uart_buf_empty = 1;
 
-uint8_t action=UART_ACTION_DEFAULT;
+uint8_t action = UART_ACTION_DEFAULT;
 
 void uart_flush()
 {
     uint8_t uart_tmp;
-    while(uart_available()) uart_tmp=UDR;
+    while(uart_available()) uart_tmp = UDR;
 }
 
 void uart_init()
@@ -64,26 +64,26 @@ void uart_init()
     UCSRC = UCSRC_SELECT | (1 << UCSZ1) | (1 << UCSZ0);
     UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE0) | (1 << TXCIE0);
     uart_flush();
-    action=UART_ACTION_DEFAULT;
-    uart_buf_empty=1;
+    action = UART_ACTION_DEFAULT;
+    uart_buf_empty = 1;
 }
 
 void uart_putc(uint8_t c)
 {
-    UDR=c;
+    UDR = c;
 }
 
 void uart_close()
 {
-    UCSRC=0;
-    UCSRB=0;
+    UCSRC = 0;
+    UCSRB = 0;
 }
 
 ISR(USART0_TX_vect)
 {
     if(!uart_buf_empty)
     {
-        uart_buf_empty=1;
+        uart_buf_empty = 1;
         uart_putc(uart_buf);
     }
 }
@@ -91,9 +91,9 @@ ISR(USART0_TX_vect)
 ISR(USART0_RX_vect)
 {
     uint8_t tmp;
-    tmp=UDR;
+    tmp = UDR;
     //static uint16_t x1=0;
-    if(mode==MODE_UART||mode==MODE_UART_BUF)
+    if(mode == MODE_UART || mode == MODE_UART_BUF)
     {
         /*lcd_num_from_right(DISPLAY_X-1,3,adc_error);
         lcd_num_from_right(DISPLAY_X-1,4,adc_reset);
@@ -109,115 +109,115 @@ ISR(USART0_RX_vect)
 
 void uart_action(uint8_t c)
 {
-    static uint8_t c2=0;
+    static uint8_t c2 = 0;
     static uint16_t c1;
-    if(action==UART_ACTION_DEFAULT)
+    if(action == UART_ACTION_DEFAULT)
     {
-        if(c=='c')
+        if(c == 'c')
         {
             return_control();
-            uart_buf_empty=0;
+            uart_buf_empty = 0;
             return;
         }
-        else if(c=='g')
+        else if(c == 'g')
         {
-            if(uart_available_tx()&&uart_buf_empty)
+            if(uart_available_tx() && uart_buf_empty)
             {
-                if(mode==MODE_UART)
+                if(mode == MODE_UART)
                 {
-                    uart_putc(capture[0]&0xff);
-                    uart_buf=capture[0]>>8;
-                    uart_buf_empty=0;
+                    uart_putc(capture[0] & 0xff);
+                    uart_buf = capture[0] >> 8;
+                    uart_buf_empty = 0;
                     return;
                 }
-                else if(mode==MODE_UART_BUF)
+                else if(mode == MODE_UART_BUF)
                 {
-                    if(current>=(ALL_N-1))
+                    if(current >= (ALL_N - 1))
                     {
                         adc_timer_pause();
-                        uart_putc(capture[c2]&0xff);
-                        uart_buf=capture[c2++]>>8;
-                        uart_buf_empty=0;
-                        if(c2>=(ALL_N))
+                        uart_putc(capture[c2] & 0xff);
+                        uart_buf = capture[c2++] >> 8;
+                        uart_buf_empty = 0;
+                        if(c2 >= (ALL_N))
                         {
-                            if(!array_filled) array_filled=1;
-                            adc_reset_c=0;
-                            current=0;
-                            c2=0;
+                            if(!array_filled) array_filled = 1;
+                            adc_reset_c = 0;
+                            current = 0;
+                            c2 = 0;
                         }
                         return;
                     }
                 }
             }
         }
-        else if(c=='n')
+        else if(c == 'n')
         {
-            uart_buf_empty=1;
-            mode=MODE_UART;
-            mode_update_flag=1;
+            uart_buf_empty = 1;
+            mode = MODE_UART;
+            mode_update_flag = 1;
         }
-        else if(c=='b')
+        else if(c == 'b')
         {
-            uart_buf_empty=1;
-            current=0;
-            action=UART_ACTION_B_RC0;
+            uart_buf_empty = 1;
+            current = 0;
+            action = UART_ACTION_B_RC0;
         }
-        else if(c=='t')
+        else if(c == 't')
         {
-            uart_buf_empty=1;
-            action=UART_ACTION_TV_RC0;
+            uart_buf_empty = 1;
+            action = UART_ACTION_TV_RC0;
         }
-        else if(c=='i')
+        else if(c == 'i')
         {
-            uart_buf_empty=1;
-            action=UART_ACTION_TI_RC0;
+            uart_buf_empty = 1;
+            action = UART_ACTION_TI_RC0;
         }
-        else if(c=='r')
+        else if(c == 'r')
         {
-            uart_buf_empty=1;
-            action=UART_ACTION_TR_RC0;
+            uart_buf_empty = 1;
+            action = UART_ACTION_TR_RC0;
         }
-        else if(c=='e')
+        else if(c == 'e')
         {
-            uart_buf_empty=1;
-            action=UART_ACTION_TE_RC0;
+            uart_buf_empty = 1;
+            action = UART_ACTION_TE_RC0;
         }
     }
-    else if(action==UART_ACTION_TV_RC0)
+    else if(action == UART_ACTION_TV_RC0)
     {
-        adc_check=c;
-        action=UART_ACTION_DEFAULT;
+        adc_check = c;
+        action = UART_ACTION_DEFAULT;
     }
-    else if(action==UART_ACTION_TE_RC0)
+    else if(action == UART_ACTION_TE_RC0)
     {
-        adc_error=c*ADC_ERROR_STEP;
-        action=UART_ACTION_DEFAULT;
+        adc_error = c * ADC_ERROR_STEP;
+        action = UART_ACTION_DEFAULT;
     }
-    else if(action==UART_ACTION_TR_RC0)
+    else if(action == UART_ACTION_TR_RC0)
     {
-        adc_reset=c*ALL_N;
-        action=UART_ACTION_DEFAULT;
+        adc_reset = c * ALL_N;
+        action = UART_ACTION_DEFAULT;
     }
-    else if(action==UART_ACTION_TI_RC0)
+    else if(action == UART_ACTION_TI_RC0)
     {
-        input=c;
-        mode_update_flag=1;
-        action=UART_ACTION_DEFAULT;
+        input = c;
+        mode_update_flag = 1;
+        action = UART_ACTION_DEFAULT;
     }
-    else if(action==UART_ACTION_B_RC0)
+    else if(action == UART_ACTION_B_RC0)
     {
-        c1=c;
-        action=UART_ACTION_B_RC1;
+        c1 = c;
+        action = UART_ACTION_B_RC1;
     }
-    else if(action==UART_ACTION_B_RC1)
+    else if(action == UART_ACTION_B_RC1)
     {
-        c1|=c<<8;
-        adc_period=c1;
-        mode=MODE_UART_BUF;
-        action=UART_ACTION_DEFAULT;
-        trigger_enabled=1;
-        mode_update_flag=1;
-        trigger_enabled=1;
-        current=0;
+        c1 |= c << 8;
+        adc_period = c1;
+        mode = MODE_UART_BUF;
+        action = UART_ACTION_DEFAULT;
+        trigger_enabled = 1;
+        mode_update_flag = 1;
+        trigger_enabled = 1;
+        current = 0;
     }
 }

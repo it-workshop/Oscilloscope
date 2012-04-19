@@ -4,7 +4,7 @@
 //settings
 #define ALL_N 128
 
-#define V_MAX (65536/2-1)
+#define V_MAX (65536 / 2 - 1)
 
 #define VOLTAGE_MAX 5
 #define VOLTAGE_ERROR 1000
@@ -22,10 +22,10 @@
 #define ADC_ERROR_MAX 32767
 #define ADC_ERROR_STEP 326
 
-#define ADC_RESET_DEFAULT (7*ALL_N)
+#define ADC_RESET_DEFAULT (7 * ALL_N)
 #define ADC_RESET_STEP ALL_N
 #define ADC_RESET_MIN ADC_RESET_STEP
-#define ADC_RESET_INF (20*ALL_N)
+#define ADC_RESET_INF (20 * ALL_N)
 
 #define TZOOM_MIN 1
 #define TZOOM_MAX 20
@@ -61,30 +61,30 @@
 
 #define MODE_MAX 5
 
-#define increment(a,min,max) a=(a==max)?min:a+1
-#define decrement(a,min,max) a=(a==min)?max:a-1
+#define increment(a,min,max) a = (a == max) ? min : a + 1
+#define decrement(a,min,max) a = (a == min) ? max : a - 1
 
-#define min(x,y) (x<y?x:y)
-#define max(x,y) (x>y?x:y)
-#define abs(x) (x<0?-x:x)
-#define absdiff(x,y) (x>y?(x-y):(y-x))
+#define min(x, y) (x < y ? x : y)
+#define max(x, y) (x > y ? x : y)
+#define abs(x) (x < 0 ? -x : x)
+#define absdiff(x, y) (x > y ? (x - y) : (y - x))
 
-#define incr_step(a,min,max,step) a=((a>(max-step))?min:a+step)
-#define decr_step(a,min,max,step) a=((a<(min+step))?max:a-step)
+#define incr_step(a, min, max, step) a = ((a > (max - step)) ? min : a + step)
+#define decr_step(a, min, max, step) a = ((a < (min + step)) ? max : a - step)
 
-#define adc_request() ADCSRA|=1<<6
-#define adc_timer_play() TIMSK1|=(1<<OCIE1B);TCCR1B=0b001
-#define adc_timer_pause() TIMSK1&=~(1<<OCIE1B);TCCR1B=0;
-#define buttons_timer_play() TIMSK0|=(1<<TOIE0);TCCR0B=0b101
-#define buttons_timer_pause() TIMSK0&=~(1<<TOIE0);TCCR0B=0
+#define adc_request() ADCSRA |= 1 << 6
+#define adc_timer_play() TIMSK1 |= (1 << OCIE1B); TCCR1B = 0b001;
+#define adc_timer_pause() TIMSK1 &= ~(1<<OCIE1B); TCCR1B = 0;
+#define buttons_timer_play() TIMSK0 |= (1 << TOIE0); TCCR0B = 0b101;
+#define buttons_timer_pause() TIMSK0 &= ~(1 << TOIE0); TCCR0B = 0;
 
-#define adc_interrupt_play() ADCSRA|=(1<<ADIE)
-#define adc_interrupt_pause() ADCSRA&=~(1<<ADIE)
+#define adc_interrupt_play() ADCSRA |= (1 << ADIE)
+#define adc_interrupt_pause() ADCSRA &= ~(1 << ADIE)
 
-#define adc_freq_normal() ADCSRA=0b10011101
-#define adc_freq_fast() ADCSRA=0b10011010
-#define adc_first()  ADMUX=0b01100000
-#define adc_second() ADMUX=0b01100001
+#define adc_freq_normal() ADCSRA = 0b10011101
+#define adc_freq_fast() ADCSRA = 0b10011010
+#define adc_first()  ADMUX = 0b01100000
+#define adc_second() ADMUX = 0b01100001
 
 void mode_update();
 void return_control();

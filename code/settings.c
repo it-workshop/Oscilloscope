@@ -34,63 +34,61 @@ extern uint16_t adc_error,
        adc_reset,
        lcd_skip;
 
-extern uint8_t m,s,u;
+extern uint8_t m, s, u;
 
 
 //temp
-extern uint16_t ymin,ymax,c,c1;
+extern uint16_t ymin, ymax, c, c1;
 
 void mode_update()
 {
     cli();
-    if((mode==MODE_UART_BUF)||(mode==MODE_UART))
+    if((mode == MODE_UART_BUF) || (mode == MODE_UART))
     {
-        //uart_init();
-        //adc_check=0;
-        redraw_menu=1;
+        redraw_menu = 1;
         buttons_timer_pause();
     }
     else
     {
         buttons_timer_play();
-        redraw_menu=1;
-        clear_screen=1;
+        redraw_menu = 1;
+        clear_screen = 1;
     }
-    if(mode==MODE_XY)
+    if(mode == MODE_XY)
     {
         adc_freq_fast();
     }
     else
     {
-        if(input==0)
+        if(input == 0)
         {
             adc_first();
         }
-        else if(input==1)
+        else if(input == 1)
         {
             adc_second();
         }
         //adc_freq_normal();
         adc_freq_fast();
     }
-    if((mode==MODE_UART)||(mode==MODE_VOLTAGE))
+    if((mode == MODE_UART) || (mode == MODE_VOLTAGE))
     {
         adc_timer_pause();
         adc_interrupt_pause();
-        if(mode==MODE_VOLTAGE)
+        if(mode == MODE_VOLTAGE)
         {
             buttons_timer_play();
         }
     }
     else
     {
-        running=1;
+        running = 1;
         adc_interrupt_play();
-        if(mode!=MODE_UART_BUF)
+        if(mode != MODE_UART_BUF)
         {
             buttons_timer_play();
         }
-        if(running||mode==MODE_UART_BUF)
+        if(running || mode == MODE_UART_BUF)
         {
             adc_timer_play();
         }
@@ -99,22 +97,21 @@ void mode_update()
             adc_timer_pause();
         }
     }
-    current=0;
-    trigger_enabled=(mode!=MODE_XY&&mode!=MODE_SPECTRUM);
+    current = 0;
+    trigger_enabled = (mode != MODE_XY && mode != MODE_SPECTRUM);
     sei();
 }
 
 void return_control()
 {
-    //uart_close();
-    mode=MODE_DUAL;
-    menu_state=MENU_NONE;
-    m=0;
-    u=0;
-    c=0;
-    array_filled=0;
-    running=1;
+    mode = MODE_DUAL;
+    menu_state = MENU_NONE;
+    m = 0;
+    u = 0;
+    c = 0;
+    array_filled = 0;
+    running = 1;
     lcd_all(0);
-    adc_period=ADC_PERIOD_MIN;
+    adc_period = ADC_PERIOD_MIN;
     mode_update();
 }

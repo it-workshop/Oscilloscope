@@ -25,18 +25,18 @@
 #endif
 
 #define BAUD 57600UL
-#define UBRRVAL (F_CPU/(BAUD*16)-1)
+#define UBRRVAL (F_CPU / (BAUD * 16) - 1)
 
 #define uart_available() (UCSRA & (1 << RXC))
-#define uart_available_tx() (UCSRA&(1<<UDRE))
+#define uart_available_tx() (UCSRA & (1 << UDRE))
 
-#define UART_ACTION_B_RC0   1
-#define UART_ACTION_B_RC1   2
+#define UART_ACTION_B_RC0 1
+#define UART_ACTION_B_RC1 2
 
-#define UART_ACTION_TV_RC0   3
-#define UART_ACTION_TR_RC0   4
-#define UART_ACTION_TE_RC0   5
-#define UART_ACTION_TI_RC0   6
+#define UART_ACTION_TV_RC0 3
+#define UART_ACTION_TR_RC0 4
+#define UART_ACTION_TE_RC0 5
+#define UART_ACTION_TI_RC0 6
 
 #define UART_ACTION_DEFAULT 0
 
