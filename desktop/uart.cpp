@@ -21,9 +21,9 @@ unsigned int mtime(bool reset = false)
 uart::uart()
 {
     tty_fd = -1;
-    device = "/dev/ttyUSB0";
+    device = (char*)"/dev/ttyUSB0";
     rate = 9600;
-    maxwait = 5;
+    maxwait = 10;
 }
 
 void uart::uopen()

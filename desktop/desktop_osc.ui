@@ -31,7 +31,7 @@
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>600</width>
+      <width>591</width>
       <height>400</height>
      </rect>
     </property>
@@ -49,7 +49,7 @@
      <x>0</x>
      <y>0</y>
      <width>810</width>
-     <height>19</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -65,14 +65,14 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>200</width>
-     <height>230</height>
+     <width>210</width>
+     <height>275</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>200</width>
-     <height>230</height>
+     <width>210</width>
+     <height>275</height>
     </size>
    </property>
    <property name="floating">
@@ -93,8 +93,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>171</width>
-       <height>171</height>
+       <width>181</width>
+       <height>181</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -109,8 +109,8 @@
         <rect>
          <x>-1</x>
          <y>116</y>
-         <width>103</width>
-         <height>27</height>
+         <width>101</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="text">
@@ -122,8 +122,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>171</width>
-         <height>116</height>
+         <width>179</width>
+         <height>120</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -248,7 +248,7 @@
          <x>0</x>
          <y>0</y>
          <width>160</width>
-         <height>21</height>
+         <height>27</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout_2">
@@ -277,7 +277,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>204</y>
+       <y>240</y>
        <width>71</width>
        <height>27</height>
       </rect>
@@ -289,9 +289,9 @@
     <widget class="QPushButton" name="pushButton_3">
      <property name="geometry">
       <rect>
-       <x>73</x>
-       <y>204</y>
-       <width>91</width>
+       <x>70</x>
+       <y>240</y>
+       <width>101</width>
        <height>27</height>
       </rect>
      </property>
@@ -303,9 +303,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>170</y>
+       <y>180</y>
        <width>160</width>
-       <height>31</height>
+       <height>58</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_3">
@@ -330,6 +330,20 @@
         </item>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="device">
+        <property name="text">
+         <string>/dev/ttyUSB0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Device</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </widget>
@@ -341,6 +355,7 @@
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -13,7 +13,7 @@ private:
     int tty_fd;
     unsigned int rate;
     char* device;
-    int maxwait;
+    unsigned int maxwait;
     bool uerror;
 public:
     uart();

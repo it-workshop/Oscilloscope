@@ -48,7 +48,9 @@ win32 {
 }
 SOURCES += main.cpp \
     desktop_osc.cpp \
-    uart.cpp
+    uart.cpp \
+    desktop_osc_device.cpp \
+    desktop_osc_graph.cpp
 HEADERS += desktop_osc.h \
     uart.h
 FORMS += desktop_osc.ui

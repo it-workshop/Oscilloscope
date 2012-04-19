@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QTimer>
 #include "uart.h"
+
 #define PLOT_SIZE 500
+enum {MODE_UART_BUF, MODE_UART};
 
 namespace Ui {
     class desktop_osc;
@@ -36,7 +38,14 @@ private:
 
     void init_graph();
     void to_graph(double,bool replot=true);
-    void clear_graph();
+    //void clear_graph();
+
+public:
+    void device_return_control();
+    void device_mode_buffer();
+    void device_mode_non_buffered();
+    void device_update();
+    void parse_settings();
 
 private slots:
     void on_pushButton_4_clicked();

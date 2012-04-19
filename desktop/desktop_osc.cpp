@@ -8,45 +8,10 @@
 #include <qwt/qwt_legend.h>
 #include <qwt/qwt_scale_draw.h>
 #include <qwt/qwt_math.h>
+#include <iostream>
 
-#include <stdio.h>
-
-enum {MODE_UART_BUF, MODE_UART};
-
-void desktop_osc::init_graph()
-{
-    timer.stop();
-    float one;
-    unsigned int max;
-
-    if(mode == MODE_UART)
-    {
-        ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T/ms");
-        one = msecs;
-        max = PLOT_SIZE;
-    }
-    else
-    {
-        max = ALL_N;
-        one = 1000000. * period / mk_frequency;
-        ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T/us");
-    }
-
-    if(msecs)
-    {
-        timer.setInterval(msecs);
-        timer.start();
-        for(int i = 0; i < PLOT_SIZE; i++)
-        {
-            d_x[i] = one * i;
-            d_y[i] = 0;
-        }
-    }
-
-    position = 0;
-    ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, max * one);
-    ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 5);
-}
+using std::cerr;
+using std::endl;
 
 desktop_osc::desktop_osc(QWidget *parent) :
         QMainWindow(parent),
@@ -58,17 +23,21 @@ desktop_osc::desktop_osc(QWidget *parent) :
     ALL_N = 128;
     current = 0;
     mode = MODE_UART_BUF;
-    ui->setupUi(this);
 
     uartobj.set_device((char*)"/dev/ttyUSB0");
     uartobj.set_rate(B57600);
     uartobj.uopen();
 
+    ui->setupUi(this);
+
+
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
     //QwtPainter::setDeviceClipping(false);
+    //QwtPainter::
 
     //ui->qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintCached, false);
     //ui->qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
+
 
 #if QT_VERSION >= 0x040000
 #ifdef Q_WS_X11
@@ -76,13 +45,13 @@ desktop_osc::desktop_osc(QWidget *parent) :
 #endif
 #endif
     ui->qwtPlot->insertLegend(new QwtLegend(), QwtPlot::BottomLegend);
-    QwtPlotCurve *cRight = new QwtPlotCurve("0");
+    QwtPlotCurve *cRight = new QwtPlotCurve("signal");
     cRight->attach(ui->qwtPlot);
     cRight->setPen(QPen(Qt::red));
     cRight->setRawSamples(d_x, d_y, PLOT_SIZE);
 
-    ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T/ms");
-    ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, "U/V");
+    ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T [ms]");
+    ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, "U [V]");
     init_graph();
     msecs = 1;
 }
@@ -106,96 +75,40 @@ void desktop_osc::changeEvent(QEvent *e)
     }
 }
 
-void desktop_osc::to_graph(double y, bool replot)
-{
-    d_y[position++] = y;
-    if(position == PLOT_SIZE) position = 0;
-    if(replot) ui->qwtPlot->replot();
-}
-
-void desktop_osc::clear_graph()
-{
-    position=0;
-    unsigned int i;
-    for(i = PLOT_SIZE - 1; i > 0; i--)
-        d_y[i] = 0;
-}
-
 void desktop_osc::update()
 {
-    if(answered || mode == MODE_UART)
-    {
-        answered = false;
-        uartobj.uwrite('g');
-        uartobj.uread_error_reset();
-        unsigned int r = uartobj.uread() | (uartobj.uread() << 8);
-        to_graph(double(r) / 6553, mode == MODE_UART || current == ALL_N);
-        if(current == ALL_N)
-        {
-            current = 0;
-            if(mode == MODE_UART_BUF) {
-                uartobj.flush();
-                uartobj.uwrite('b');
-                uartobj.uwrite(period & 0xff);
-                uartobj.uwrite(period >> 8);
-                clear_graph();
-            }
-        }
-        else current++;
-        answered = true;
-    }
+    device_update();
 }
 
+void desktop_osc::parse_settings()
+{
+    uartobj.uclose();
+    uartobj.set_device((char*)ui->device->text().toStdString().c_str());
+    uartobj.uopen();
+}
+
+//stop
 void desktop_osc::on_pushButton_2_clicked()
 {
     timer.stop();
 }
 
+//return control
 void desktop_osc::on_pushButton_3_clicked()
 {
-    uartobj.uwrite('c');
-    timer.stop();
+    device_return_control();
 }
 
+//start_buffered
 void desktop_osc::on_pushButton_4_clicked()
 {
-    mode = MODE_UART_BUF;
-    timer.stop();
-    period = mk_frequency / ui->spinBox_2->value();
-    uartobj.flush();
-
-    uartobj.uwrite('i');
-    uartobj.uwrite(ui->input->currentIndex());
-
-    uartobj.uwrite('t');
-    uartobj.uwrite(ui->trigger_check->value());
-
-    uartobj.uwrite('r');
-    uartobj.uwrite(ui->trigger_reset->value());
-
-    uartobj.uwrite('e');
-    uartobj.uwrite(ui->trigger_error->value());
-
-    uartobj.uwrite('b');
-    uartobj.uwrite(period & 0xff);
-    uartobj.uwrite(period >> 8);
-
-    current = 0;
-    msecs = 1;
-    answered = true;
-    init_graph();
+    parse_settings();
+    device_mode_buffer();
 }
 
+//start_non_buffered
 void desktop_osc::on_pushButton_clicked()
 {
-    timer.stop();
-    mode = MODE_UART;
-    uartobj.uwrite('n');
-
-    uartobj.uwrite('i');
-    uartobj.uwrite(ui->input->currentIndex());
-
-    msecs = ui->spinBox->value();
-    answered = true;
-    init_graph();
+    parse_settings();
+    device_mode_non_buffered();
 }
