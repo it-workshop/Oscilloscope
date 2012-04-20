@@ -5,8 +5,9 @@ void desktop_osc::device_mode_buffer()
 {
     mode = MODE_UART_BUF;
     timer.stop();
-    period = mk_frequency / ui->spinBox_2->value();
     uartobj.flush();
+
+    unsigned int period = mk_frequency / frequency;
 
     uartobj.uwrite('i'); //input
     uartobj.uwrite(ui->input->currentIndex());
@@ -39,6 +40,7 @@ void desktop_osc::device_return_control()
 
 void desktop_osc::device_update()
 {
+    unsigned int period = mk_frequency / frequency;
     const unsigned int s = 6553;
     if(answered || mode == MODE_UART)
     {

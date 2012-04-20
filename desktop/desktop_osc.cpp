@@ -23,6 +23,7 @@ desktop_osc::desktop_osc(QWidget *parent) :
     ALL_N = 128;
     current = 0;
     mode = MODE_UART_BUF;
+    trigger_reset_max = 20;
 
     uartobj.set_device((char*)"/dev/ttyUSB0");
     uartobj.set_rate(B57600);
@@ -85,6 +86,8 @@ void desktop_osc::parse_settings()
     uartobj.uclose();
     uartobj.set_device((char*)ui->device->text().toStdString().c_str());
     uartobj.uopen();
+
+    frequency = ui->frequency->value();
 }
 
 //stop
@@ -96,6 +99,7 @@ void desktop_osc::on_pushButton_2_clicked()
 //return control
 void desktop_osc::on_pushButton_3_clicked()
 {
+    parse_settings();
     device_return_control();
 }
 
@@ -111,4 +115,29 @@ void desktop_osc::on_pushButton_clicked()
 {
     parse_settings();
     device_mode_non_buffered();
+}
+
+void desktop_osc::on_frequency_valueChanged()
+{
+    ui->frequency_slider->setValue(ui->frequency->value());
+    frequency = ui->frequency->value();
+}
+
+void desktop_osc::on_frequency_slider_sliderMoved(int position)
+{
+    ui->frequency->setValue(position);
+    frequency = ui->frequency->value();
+}
+
+void desktop_osc::on_trigger_reset_valueChanged()
+{
+    if((unsigned int) ui->trigger_reset->value() == trigger_reset_max)
+        ui->trigger_reset->setSuffix(" (never)");
+    else ui->trigger_reset->setSuffix("");
+}
+
+void desktop_osc::on_trigger_check_valueChanged()
+{
+    if(ui->trigger_check->value() == 0) ui->trigger_check->setSuffix(" (off)");
+    else ui->trigger_check->setSuffix("");
 }

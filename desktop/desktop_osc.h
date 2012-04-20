@@ -23,10 +23,13 @@ protected:
 
 private:
     QTimer timer;
+
     int mk_frequency;
-    unsigned int msecs;
-    unsigned int period;
     unsigned int ALL_N;
+    unsigned int trigger_reset_max;
+
+    unsigned int msecs;
+    unsigned int frequency;
     unsigned int current;
     unsigned int position;
     unsigned short int mode;
@@ -53,6 +56,10 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButton_clicked();
     void update();
+    void on_frequency_valueChanged();
+    void on_frequency_slider_sliderMoved(int position);
+    void on_trigger_reset_valueChanged();
+    void on_trigger_check_valueChanged();
 };
 
 #endif // DESKTOP_OSC_H

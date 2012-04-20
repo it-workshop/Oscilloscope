@@ -31,7 +31,7 @@
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>591</width>
+      <width>581</width>
       <height>400</height>
      </rect>
     </property>
@@ -65,14 +65,14 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>210</width>
-     <height>275</height>
+     <width>220</width>
+     <height>330</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>210</width>
-     <height>275</height>
+     <width>220</width>
+     <height>330</height>
     </size>
    </property>
    <property name="floating">
@@ -93,8 +93,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>181</width>
-       <height>181</height>
+       <width>191</width>
+       <height>195</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -104,26 +104,13 @@
       <attribute name="title">
        <string>Buffered</string>
       </attribute>
-      <widget class="QPushButton" name="pushButton_4">
-       <property name="geometry">
-        <rect>
-         <x>-1</x>
-         <y>116</y>
-         <width>101</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Start</string>
-       </property>
-      </widget>
       <widget class="QWidget" name="formLayoutWidget">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>179</width>
-         <height>120</height>
+         <width>181</width>
+         <height>161</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -138,7 +125,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="spinBox_2">
+         <widget class="QSpinBox" name="frequency">
           <property name="minimum">
            <number>305</number>
           </property>
@@ -150,7 +137,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_3">
           <property name="toolTip">
            <string comment="dfdf" extracomment="dfdf"/>
@@ -169,8 +156,11 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QSpinBox" name="trigger_check">
+          <property name="wrapping">
+           <bool>true</bool>
+          </property>
           <property name="minimum">
            <number>0</number>
           </property>
@@ -182,21 +172,21 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>Trg. rst (smp.)</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Trg. err. (%)</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="5" column="1">
          <widget class="QSpinBox" name="trigger_error">
           <property name="minimum">
            <number>0</number>
@@ -209,8 +199,11 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="4" column="1">
          <widget class="QSpinBox" name="trigger_reset">
+          <property name="suffix">
+           <string/>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -219,6 +212,28 @@
           </property>
           <property name="value">
            <number>19</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSlider" name="frequency_slider">
+          <property name="minimum">
+           <number>305</number>
+          </property>
+          <property name="maximum">
+           <number>100000</number>
+          </property>
+          <property name="value">
+           <number>100000</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBothSides</enum>
+          </property>
+          <property name="tickInterval">
+           <number>10000</number>
           </property>
          </widget>
         </item>
@@ -273,39 +288,13 @@
       </widget>
      </widget>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>240</y>
-       <width>71</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Stop</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>240</y>
-       <width>101</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Return control</string>
-     </property>
-    </widget>
     <widget class="QWidget" name="formLayoutWidget_3">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>180</y>
-       <width>160</width>
-       <height>58</height>
+       <y>200</y>
+       <width>191</width>
+       <height>124</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_3">
@@ -330,6 +319,20 @@
         </item>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Device</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="device">
         <property name="text">
@@ -337,10 +340,17 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_7">
+      <item row="2" column="1">
+       <widget class="QPushButton" name="pushButton_3">
         <property name="text">
-         <string>Device</string>
+         <string>Return control</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="text">
+         <string>Start</string>
         </property>
        </widget>
       </item>

@@ -17,7 +17,7 @@ void desktop_osc::init_graph()
     else
     {
         max = ALL_N;
-        one = k * period / mk_frequency;
+        one = k / frequency;
         ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T [us]");
     }
 
