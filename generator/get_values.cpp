@@ -3,17 +3,21 @@
 
 #define abs(x) (x > 0 ? x : (-x))
 
-using std::cerr;
+using std::cout;
 using std::endl;
 
 double f(double x)
 {
-    return(abs(x));
+    return(sin(cos(x)));
 }
 
 int main()
 {
-    unsigned int N = 50, set_min = 0, set_max = 4095;
+    cout << "#include <avr/io.h>" << endl
+        << "#include <util/delay.h>" << endl
+        << "#include <avr/interrupt.h>" << endl;
+
+    unsigned int N = 100, set_min = 0, set_max = 4095;
     double maxx = 2 * M_PI, zoom = maxx / (N * 1.), offset = -maxx / 2;
 
     double* V = new double[N];
@@ -30,17 +34,17 @@ int main()
         V[x] = t;
     }
 
-    cerr << "uint8_t N = " << N << ";" << endl;
-    cerr << "uint16_t values[] = {";
+    cout << "uint8_t N = " << N << ";" << endl;
+    cout << "uint16_t values[] = {";
     
     for(x = 0; x < N; x++)
     {
         V[x]=((V[x] - min) / (max - min) * (set_max - set_min)) + set_min;
-        if(x) cerr << ", ";
-        cerr << round(V[x]);
+        if(x) cout << ", ";
+        cout << round(V[x]);
     }
     
-    cerr << "};" << endl;
+    cout << "};" << endl;
     
     return(0);
 }

@@ -1,5 +1,5 @@
 PRG            = main
-OBJ            = main.o dac.o
+OBJ            = main.o dac.o function.o
 MODEL          = 644
 FREQ           = 20000000UL
 MCU_TARGET     = atmega$(MODEL)
@@ -19,10 +19,11 @@ AVRDUDE	       = avrdude
 PROG           = avr910
 DEV            = /dev/ttyACM0
 
-
 LFUSE	       = 0xf7
 HFUSE	       = 0xd1
 EFUSE	       = 0xff
+
+FUNCTION_FILE  = function.c
 
 all: $(PRG).elf lst text
 
@@ -54,3 +55,7 @@ hex:  $(PRG).hex
 
 install: hex
 	$(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U flash:w:$(PRG).hex
+
+function:
+	g++ -o get_values get_values.cpp
+	./get_values > $(FUNCTION_FILE)
