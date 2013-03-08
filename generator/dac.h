@@ -7,8 +7,9 @@
 #define DAC_MAX 0b0000111111111111
 
 //pins
-#define DAC_CMDDDR DDRB
-#define DAC_CMDPORT PORTB
+
+extern volatile unsigned char* DAC_CMDDDR;
+extern volatile unsigned char* DAC_CMDPORT;
 #define DAC_CS 1
 #define DAC_CLK (1 << 1)
 #define DAC_SDI (1 << 2)

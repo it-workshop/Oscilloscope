@@ -7,7 +7,7 @@ OPTIMIZE       = -O3 -mcall-prologues
 DEFS           =
 LIBS           =
 
-CC             = avr-gcc
+CC             = avr-g++
 ALL_ASFLAGS    = -mmcu=$(MCU_TARGET) -I. -x -DF_CPU=$(FREQ)
 CFLAGS         = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(FREQ)
 LDFLAGS        = -Wl,-Map,$(PRG).map
