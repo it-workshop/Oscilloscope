@@ -23,7 +23,7 @@ LFUSE	       = 0xf7
 HFUSE	       = 0xd1
 EFUSE	       = 0xff
 
-FUNCTION_FILE  = function.c
+FUNCTION_FILE  = function
 
 all: $(PRG).elf lst text
 
@@ -58,4 +58,5 @@ install: hex
 
 function:
 	g++ -o get_values get_values.cpp
-	./get_values > $(FUNCTION_FILE)
+	./get_values c > $(FUNCTION_FILE).c
+	./get_values h > $(FUNCTION_FILE).h
