@@ -2,7 +2,7 @@
 #include <iostream>
 
 #define DAC_N 2
-#define N 100
+#define N 220
 
 #define abs(x) (x > 0 ? x : (-x))
 
@@ -11,12 +11,12 @@ using std::endl;
 
 double f1(double x)
 {
-    return(sin(x));
+    return(sin(2 * x));
 }
 
 double f2(double x)
 {
-    return(sin(2 * x));
+    return(sin(3 * x));
 }
 
 double (*f[DAC_N])(double x) = {f1, f2};
@@ -30,8 +30,8 @@ int main(int argc, char** argv)
 		cout << "#ifndef FUNCTION_H" << endl;
 		cout << "#define FUNCTION_H" << endl;
 
-		cout << "#define DAC_N 2" << endl;
-		cout << "#define N 100" << endl;
+		cout << "#define DAC_N " << DAC_N << endl;
+		cout << "#define N " << N << endl;
 
 		cout << "#endif" << endl;
 	}
