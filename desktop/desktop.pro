@@ -7,45 +7,14 @@ QWT_ROOT = .
 include( $${QWT_ROOT}/qwtconfig.pri )
 SUFFIX_STR = 
 VVERSION = $$[QT_VERSION]
-isEmpty(VVERSION) { 
-    # Qt 3
-    debug:SUFFIX_STR = $${DEBUG_SUFFIX}
-    else:SUFFIX_STR = $${RELEASE_SUFFIX}
-}
-else { 
-    CONFIG(debug, debug|release):SUFFIX_STR = $${DEBUG_SUFFIX}
-    else:SUFFIX_STR = $${RELEASE_SUFFIX}
-}
+
+CONFIG(debug, debug|release):SUFFIX_STR = $${DEBUG_SUFFIX}
+else:SUFFIX_STR = $${RELEASE_SUFFIX}
 QWTLIB = qwt$${SUFFIX_STR}
-isEmpty(VVERSION) { 
-    # Qt 3
-    DEPENDPATH += /usr/include/qwt-qt3
-    INCLUDEPATH += /usr/include/qwt-qt3
-    LIBS += -L$${QWT_ROOT}/lib \
-        -l$${QWTLIB}-qt3
-}
-else { 
-    # Qt 4
-    DEPENDPATH += /usr/include/qwt-qt4
-    INCLUDEPATH += /usr/include/qwt
-    LIBS += -L$${QWT_ROOT}/lib \
-        -l$${QWTLIB}
-}
-win32 { 
-    contains(CONFIG, QwtDll) { 
-        DEFINES += QT_DLL \
-            QWT_DLL
-        QWTLIB = $${QWTLIB}$${VER_MAJ}
-    }
-    win32-msvc:LIBS += $${QWT_ROOT}/lib/$${QWTLIB}.lib
-    win32-msvc.net:LIBS += $${QWT_ROOT}/lib/$${QWTLIB}.lib
-    win32-msvc2002:LIBS += $${QWT_ROOT}/lib/$${QWTLIB}.lib
-    win32-msvc2003:LIBS += $${QWT_ROOT}/lib/$${QWTLIB}.lib
-    win32-msvc2005:LIBS += $${QWT_ROOT}/lib/$${QWTLIB}.lib
-    win32-msvc2008:LIBS += $${QWT_ROOT}/lib/$${QWTLIB}.lib
-    win32-g++:LIBS += -L$${QWT_ROOT}/lib \
-        -l$${QWTLIB}
-}
+
+DEPENDPATH += /usr/include/qwt-qt4
+INCLUDEPATH += /usr/include/qwt
+LIBS += -L$${QWT_ROOT}/lib
 SOURCES += main.cpp \
     desktop_osc.cpp \
     uart.cpp \
@@ -54,3 +23,14 @@ SOURCES += main.cpp \
 HEADERS += desktop_osc.h \
     uart.h
 FORMS += desktop_osc.ui
+
+
+INCLUDEPATH += /usr/include /usr/local/include /usr/include/qwt-qt4 /usr/include/qt4/QtExtSerialPort ../../arduino/quadrocopter_oop/
+
+LIBS += -L/usr/local/lib -lqwt-qt4
+LIBS += -L/usr/local/lib -lQtSvg
+
+CONFIG += extserialport qwt
+
+# magick?
+LIBS += -L/usr/lib/x86_64-linux-gnu/ -lqextserialport-1.2

@@ -1,3 +1,10 @@
+desktop/desktop
+moc_*.cpp
+ui_*.cpp
+ui_*.h
+desktop/Makefile
+*~
+*.pro.user
 *.o
 *.lst
 *.elf

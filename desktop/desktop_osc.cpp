@@ -1,13 +1,13 @@
 #include "desktop_osc.h"
 #include "ui_desktop_osc.h"
-#include <qwt/qwt_painter.h>
-#include <qwt/qwt_plot_canvas.h>
-#include <qwt/qwt_plot_marker.h>
-#include <qwt/qwt_plot_curve.h>
-#include <qwt/qwt_scale_widget.h>
-#include <qwt/qwt_legend.h>
-#include <qwt/qwt_scale_draw.h>
-#include <qwt/qwt_math.h>
+#include <qwt-qt4/qwt_painter.h>
+#include <qwt-qt4/qwt_plot_canvas.h>
+#include <qwt-qt4/qwt_plot_marker.h>
+#include <qwt-qt4/qwt_plot_curve.h>
+#include <qwt-qt4/qwt_scale_widget.h>
+#include <qwt-qt4/qwt_legend.h>
+#include <qwt-qt4/qwt_scale_draw.h>
+#include <qwt-qt4/qwt_math.h>
 #include <iostream>
 
 using std::cerr;
@@ -49,7 +49,7 @@ desktop_osc::desktop_osc(QWidget *parent) :
     QwtPlotCurve *cRight = new QwtPlotCurve("signal");
     cRight->attach(ui->qwtPlot);
     cRight->setPen(QPen(Qt::red));
-    cRight->setRawSamples(d_x, d_y, PLOT_SIZE);
+    cRight->setRawData(d_x, d_y, PLOT_SIZE);
 
     ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, "T [ms]");
     ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, "U [V]");
