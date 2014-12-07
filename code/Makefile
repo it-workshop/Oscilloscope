@@ -17,7 +17,7 @@ OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
 AVRDUDE	       = avrdude
-PROG           = avr910
+PROG           = avrisp
 DEV            = /dev/ttyACM0
 
 
@@ -44,7 +44,7 @@ lst:  $(PRG).lst
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 fuse:
-	$(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
+	$(AVRDUDE) -b 19200 -p m$(MODEL) -c $(PROG) -P $(DEV) -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
 
 fonts:
 	$(AVRDUDE) -p m$(MODEL) -c $(PROG) -P $(DEV) -U eeprom:w:eeprom_fonts

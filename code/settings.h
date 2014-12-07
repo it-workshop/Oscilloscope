@@ -2,7 +2,7 @@
 #define SETTINGS_H
 
 //settings
-#define ALL_N 128
+#define ALL_N 4096
 
 #define V_MAX (65536 / 2 - 1)
 
